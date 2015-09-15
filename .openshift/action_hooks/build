@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# define some variables for JDK 8
+JDK_TGZ=jdk-8u60-linux-i586.tar.gz
+JDK_URL=http://download.oracle.com/otn-pub/java/jdk/8u60-b27/$JDK_TGZ
+JDK_DIR=jdk1.8.0_60
+JDK_LINK=jdk1.8
+
+# download JDK1.8 to the data directory if it does not yet exist, extract it and create a symlink
+cd ${OPENSHIFT_DATA_DIR}
+
+if [[ ! -d $JDK_DIR ]]
+then
+  wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" $JDK_URL
+  tar -zxf $JDK_TGZ
+  rm -fr $JDK_TGZ
+  rm $JDK_LINK
+  ln -s $JDK_DIR $JDK_LINK
+fi
+
+# export environment vriables
+export JAVA_HOME="$OPENSHIFT_DATA_DIR/$JDK_LINK"
+export PATH=$JAVA_HOME/bin:$PATH
+
+# call our own mvn script with the right settings
+cd $OPENSHIFT_REPO_DIR
+./.openshift/mvn package -s .openshift/settings.xml -DskipTests=true
