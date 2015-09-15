@@ -1,3 +1,5 @@
-The OpenShift `diy` cartridge documentation can be found at:
+# taboo2
 
-http://openshift.github.io/documentation/oo_cartridge_guide.html#diy
+REST service for tagged bookmarks.
+
+This second version is built with Spring-Boot and using a Mongo-DB as backend store.
