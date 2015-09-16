@@ -5,6 +5,8 @@
  */
 package com.sothawo.taboo2;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,12 +21,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class Taboo2Service {
 // ------------------------------ FIELDS ------------------------------
 
+    /** Logger for the class */
+    private final static Logger log = LoggerFactory.getLogger(Taboo2Service.class);
+
     /** Mapping for the class, package scope for test class. */
     static final String MAPPING_TABOO2 = "/taboo2";
+
     /** Mapping for check call, package scope for test class. */
     static final String MAPPING_CHECK = "/check";
+
     /** Result of check call, package scope for test class. */
     static final String IS_RUNNING = "running";
+
+// -------------------------- STATIC METHODS --------------------------
+
+    static {
+        log.debug("class {} loaded", Taboo2Service.class.getCanonicalName());
+    }
 
 // -------------------------- OTHER METHODS --------------------------
 
