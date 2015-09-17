@@ -5,6 +5,10 @@
  */
 package com.sothawo.taboo2;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,11 +24,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 @EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+// ------------------------------ FIELDS ------------------------------
 
+    /** Logger for the class */
+    private final static Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+
+    /** the configuration object */
+    @Autowired
+    SecurityProperties securityProperties;
+
+// -------------------------- OTHER METHODS --------------------------
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.requiresChannel().anyRequest().requiresSecure();
+        log.debug("configuring http, requires ssl: {}", securityProperties.isRequireSsl());
+        if (securityProperties.isRequireSsl()) {
+            http.requiresChannel().anyRequest().requiresSecure();
+        }
+        http.authorizeRequests().anyRequest().fullyAuthenticated();
+        http.httpBasic();
         http.csrf().disable();
     }
 
