@@ -44,12 +44,6 @@ public class Taboo2UserService implements UserDetailsService {
         userPasswords.put("answer", "$2a$10$oU1DPzo3s7jaGNsABpn7JuF5x0yhaQbcv9rSrBCVVs.6WbXZZGqgG");
     }
 
-// --------------------- GETTER / SETTER METHODS ---------------------
-
-    public PasswordEncoder getPwEncoder() {
-        return pwEncoder;
-    }
-
 // ------------------------ INTERFACE METHODS ------------------------
 
 
@@ -58,12 +52,12 @@ public class Taboo2UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // get the encoded password from the dummy store
-        Optional<String> encodedPassword = Optional.ofNullable(userPasswords.get(username));
-        if (encodedPassword.isPresent()) {
+        String encodedPassword = userPasswords.get(username);
+        if (null != encodedPassword) {
             log.debug("trying to authenticate user {}.", username);
             List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority("USER"));
-            return new User(username, encodedPassword.get(), authorities);
+            return new User(username, encodedPassword, authorities);
         }
         throw new UsernameNotFoundException(username);
     }
@@ -81,5 +75,4 @@ public class Taboo2UserService implements UserDetailsService {
             System.out.printf(new BCryptPasswordEncoder().encode(args[0]));
         }
     }
-
 }

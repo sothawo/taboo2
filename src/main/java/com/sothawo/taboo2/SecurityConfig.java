@@ -48,7 +48,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        Taboo2UserService userService = new Taboo2UserService();
-        auth.userDetailsService(userService).passwordEncoder(userService.getPwEncoder());
+        auth.userDetailsService(new Taboo2UserService()).passwordEncoder(new BCryptPasswordEncoder());
     }
 }
