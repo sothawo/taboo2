@@ -17,7 +17,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Service to provide User details.
@@ -31,12 +34,20 @@ public class Taboo2UserService implements UserDetailsService {
     private final static Logger log = LoggerFactory.getLogger(Taboo2UserService.class);
 
     /** Encoder for passwords */
-    private final PasswordEncoder pwEncoder;
+    private final PasswordEncoder pwEncoder = new BCryptPasswordEncoder();
 
-// --------------------------- CONSTRUCTORS ---------------------------
+    // todo: remove this implementation
+    /** dummy implementation for the beginning */
+    private final Map<String, String> userPasswords = new HashMap<>();
+    {
+        userPasswords.put("admin", "$2a$10$DvM65o0Sw5/CLUjnrou/ouAyhhrod5PtdoEVb.mi7HbujuzFOqKuW");
+        userPasswords.put("answer", "$2a$10$oU1DPzo3s7jaGNsABpn7JuF5x0yhaQbcv9rSrBCVVs.6WbXZZGqgG");
+    }
 
-    public Taboo2UserService(PasswordEncoder pwEncoder) {
-        this.pwEncoder = pwEncoder;
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+    public PasswordEncoder getPwEncoder() {
+        return pwEncoder;
     }
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -46,12 +57,29 @@ public class Taboo2UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("USER"));
-
-        // get the encoded password from the store
-        String encodedPassword = pwEncoder.encode(username);
-        log.debug("dummy loading for user {} with required password {}", username, encodedPassword);
-        return new User(username, encodedPassword, authorities);
+        // get the encoded password from the dummy store
+        Optional<String> encodedPassword = Optional.ofNullable(userPasswords.get(username));
+        if (encodedPassword.isPresent()) {
+            log.debug("trying to authenticate user {}.", username);
+            List<GrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority("USER"));
+            return new User(username, encodedPassword.get(), authorities);
+        }
+        throw new UsernameNotFoundException(username);
     }
+
+// --------------------------- main() method ---------------------------
+
+    /**
+     * encodes the string that is given as argument.
+     *
+     * @param args
+     *         program arguments.
+     */
+    public static void main(String[] args) {
+        if (args.length > 0) {
+            System.out.printf(new BCryptPasswordEncoder().encode(args[0]));
+        }
+    }
+
 }

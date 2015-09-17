@@ -42,14 +42,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             http.requiresChannel().anyRequest().requiresSecure();
         }
         http.authorizeRequests().anyRequest().fullyAuthenticated();
-        http.httpBasic();
+        http.httpBasic().realmName("Taboo2");
         http.csrf().disable();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        BCryptPasswordEncoder pwEncoder = new BCryptPasswordEncoder();
-        auth.userDetailsService(new Taboo2UserService(pwEncoder))
-                .passwordEncoder(pwEncoder);
+        Taboo2UserService userService = new Taboo2UserService();
+        auth.userDetailsService(userService).passwordEncoder(userService.getPwEncoder());
     }
 }
