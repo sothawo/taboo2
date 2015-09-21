@@ -7,9 +7,12 @@ package com.sothawo.taboo2;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Spring-Boot Service implementation for the taboo backend service.
@@ -33,11 +36,16 @@ public class Taboo2Service {
     /** Result of check call, package scope for test class. */
     static final String IS_RUNNING = "running";
 
+    @Autowired
+    private Taboo2Configuration taboo2Config;
+
 // -------------------------- STATIC METHODS --------------------------
 
     static {
         log.debug("class {} loaded", Taboo2Service.class.getCanonicalName());
     }
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 // -------------------------- OTHER METHODS --------------------------
 
@@ -49,5 +57,10 @@ public class Taboo2Service {
     @RequestMapping(value = MAPPING_CHECK, method = RequestMethod.GET)
     public final String check() {
         return IS_RUNNING;
+    }
+
+    @PostConstruct
+    private void postConstruct(){
+        log.debug("taboo2.info={}", taboo2Config.getInfo());
     }
 }
