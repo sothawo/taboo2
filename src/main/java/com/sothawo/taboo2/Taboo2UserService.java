@@ -33,9 +33,6 @@ public class Taboo2UserService implements UserDetailsService {
     /** Logger for the class */
     private final static Logger log = LoggerFactory.getLogger(Taboo2UserService.class);
 
-    /** Encoder for passwords */
-    private final PasswordEncoder pwEncoder = new BCryptPasswordEncoder();
-
     // todo: remove this implementation
     /** dummy implementation for the beginning */
     private final Map<String, String> userPasswords = new HashMap<>();
