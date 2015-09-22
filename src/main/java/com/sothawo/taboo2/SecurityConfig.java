@@ -43,6 +43,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     SecurityProperties securityProperties;
 
+    /** the service to provide the user data */
+    @Autowired
+    Taboo2UserService userService;
+
 // -------------------------- OTHER METHODS --------------------------
 
     @Override
@@ -58,6 +62,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(new Taboo2UserService()).passwordEncoder(new BCryptPasswordEncoder());
+        auth.userDetailsService(userService).passwordEncoder(new BCryptPasswordEncoder());
     }
 }

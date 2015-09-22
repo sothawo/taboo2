@@ -1,0 +1,5 @@
+# Format
+# user:bcrypt-hashed-password:role1,...,roleN
+#
+admin:$2a$10$DvM65o0Sw5/CLUjnrou/ouAyhhrod5PtdoEVb.mi7HbujuzFOqKuW:admin
+answer:$2a$10$oU1DPzo3s7jaGNsABpn7JuF5x0yhaQbcv9rSrBCVVs.6WbXZZGqgG:user

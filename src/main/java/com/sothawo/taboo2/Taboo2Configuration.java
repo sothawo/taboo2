@@ -21,6 +21,9 @@ public class Taboo2Configuration {
     /** Info from the configuration, should be set in each application.properties file */
     private String info = "undefined";
 
+    /** Name of the file with user/password information */
+    private String users = null;
+
 // --------------------- GETTER / SETTER METHODS ---------------------
 
     public String getInfo() {
@@ -29,5 +32,13 @@ public class Taboo2Configuration {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public String getUsers() {
+        return users;
+    }
+
+    public void setUsers(String users) {
+        this.users = users;
     }
 }
