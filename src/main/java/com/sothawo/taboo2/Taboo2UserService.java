@@ -78,7 +78,7 @@ public class Taboo2UserService implements UserDetailsService {
             if (!optionalUser.isPresent()) {
                 // reload the data from users file
                 log.debug("loading user data");
-
+                knownUsers.clear();
                 Optional.ofNullable(taboo2Configuration.getUsers())
                         .ifPresent(filename -> {
                             log.debug("user file: {}", filename);
@@ -112,7 +112,9 @@ public class Taboo2UserService implements UserDetailsService {
                 optionalUser = Optional.ofNullable(knownUsers.get(username));
             }
         }
-        return optionalUser.orElseThrow(() -> new UsernameNotFoundException(username));
+        // need to return a copy as Spring security erases the password in the object after verification
+        User user = optionalUser.orElseThrow(() -> new UsernameNotFoundException(username));
+        return new User(user.getUsername(), user.getPassword(), user.getAuthorities());
     }
 
 // --------------------------- main() method ---------------------------
