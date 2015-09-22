@@ -2,6 +2,26 @@
 
 REST service for tagged bookmarks.
 
-This second version is built with Spring-Boot and using a Mongo-DB as backend store.
+This second version is built with Spring-Boot for the REST service and is using a Mongo-DB as backend store.
 
-**NOTE: at the moment this is just the skeleton for service the with no functionality yet**
+The project is configured so that it can be deployed to an OpenShift DIY cartridge.
+
+## configuration
+
+The application is configured with the _application.properties_ file, or if started with a specific Spring profile 
+with the _application-\<profile\>.properties_ file. This is the standard Spring-Boot behaviour.
+
+The default resources directory contains a sample file for running with no profile and a configuration for a profile
+named openshift. As can be seen in the _.openshift/action_hooks/start_ file, this profile is activated when the 
+application is deployed to OpenShift.
+
+Both configuration samples contain all the entries that may be relevant for the application.
+
+### users, passwords and roles
+
+the configuration needs to reference a file with user data when _security.basic.enabled_ is configured to _true_.
+This file has lines with the following content:
+
+_username:hashedPassword:role1,...,roleN_
+
+The hashedPassword can be created with the _main_ method of the Taboo2UserService class.

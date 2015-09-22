@@ -3,5 +3,4 @@
 .eclipse
 target
 
-.DS_Store
-
+data/openshift-users.txt
