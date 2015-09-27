@@ -47,12 +47,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class Taboo2ServiceTests {
 // ------------------------------ FIELDS ------------------------------
 
-    /** the spring context. */
-    @Autowired
-    private WebApplicationContext wac;
-
-    /** the service to test, set up in @Before method from the WebApplicationContext. Cannot be created with @Tested
+    /** The service to test. Cannot be created with @Tested
      * because we need internal spring DI resolution. */
+    @Autowired
     private Taboo2Service taboo2Service;
 
     /** a mocked bookmark repository. */
@@ -73,11 +70,10 @@ public class Taboo2ServiceTests {
 
     /**
      * set up the Service to be tested from the WebApplication context and replace the contained BookmarkRepository
-     * with a mock.
+     * with a mock. Must be called before each test, as JMockit creates the repository for each test call.
      */
     @Before
     public void setupTest() {
-        taboo2Service = wac.getBean(Taboo2Service.class);
         Deencapsulation.setField(taboo2Service, repository);
         taboo2Service.logInfoToDebug();
     }

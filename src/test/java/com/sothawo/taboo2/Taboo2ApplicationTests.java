@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Taboo2Application.class)
 @WebAppConfiguration
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "repo-inmemory"})
 public class Taboo2ApplicationTests {
 
 	@Test
