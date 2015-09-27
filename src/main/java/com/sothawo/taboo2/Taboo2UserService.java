@@ -84,6 +84,7 @@ public class Taboo2UserService implements UserDetailsService {
                             log.debug("user file: {}", filename);
                             try {
                                 Files.lines(Paths.get(filename))
+                                        .map(String::trim)
                                         .filter(line -> !line.isEmpty())
                                         .filter(line -> !line.startsWith("#"))
                                         .forEach(line -> {
