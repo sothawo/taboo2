@@ -20,7 +20,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 /**
- * configuraiton for BookmarkRepositories.
+ * configuration for BookmarkRepositories. The class must produce a BookmarkRepository implementation for each of the
+ * used spring profiles.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
@@ -29,23 +30,25 @@ public class BookmarkRepositoryConfig {
 // -------------------------- OTHER METHODS --------------------------
 
     /**
-     * in-memory implementation, used in-memory profile is defined.
+     * in-memory implementation, used when repo-inmemory profile is active.
      *
      * @return BookmarkRepository in-memory implementation.
      */
     @Bean(name = "defaultBookmarkRepository")
     @Profile("repo-inmemory")
-    public BookmarkRepository getDefaultBookmarkRepository() {
+    public BookmarkRepository defaultBookmarkRepository() {
         return new InMemoryRepository();
     }
 
     /**
-     * null implementation, returned, when the repo-mocked profile is active
+     * null implementation, used when the repo-mocked profile is active, becaus then in the tests a mocked repo is
+     * injected.
+     *
      * @return null
      */
     @Bean(name = "nullBookmarkRepository")
     @Profile("repo-mocked")
-    public BookmarkRepository getNullBookmarkRepository() {
+    public BookmarkRepository nullBookmarkRepository() {
         return null;
     }
 }

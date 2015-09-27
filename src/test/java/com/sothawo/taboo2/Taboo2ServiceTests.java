@@ -53,7 +53,7 @@ public class Taboo2ServiceTests {
 
     /** the service to test, set up in @Before method from the WebApplicationContext. Cannot be created with @Tested
      * because we need internal spring DI resolution. */
-    Taboo2Service taboo2Service;
+    private Taboo2Service taboo2Service;
 
     /** a mocked bookmark repository. */
     @Injectable
