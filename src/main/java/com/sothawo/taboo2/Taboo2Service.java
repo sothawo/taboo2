@@ -46,8 +46,13 @@ public class Taboo2Service {
     /** Result of check call, package scope for test class. */
     static final String IS_RUNNING = "running";
 
+    /** configuration object */
     @Autowired
     private Taboo2Configuration taboo2Config;
+
+    /** backend repository */
+    @Autowired
+    private BookmarkRepository repository;
 
 // -------------------------- STATIC METHODS --------------------------
 
@@ -70,7 +75,9 @@ public class Taboo2Service {
     }
 
     @PostConstruct
-    private void postConstruct(){
+    public void logInfoToDebug(){
         log.debug("taboo2.info={}", taboo2Config.getInfo());
+        log.debug("bookmark repository implementation: {}", (null == repository) ? "null" : repository.getClass()
+                .getCanonicalName());
     }
 }

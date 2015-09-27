@@ -15,6 +15,10 @@
 */
 package com.sothawo.taboo2;
 
+import mockit.Deencapsulation;
+import mockit.Injectable;
+import mockit.Verifications;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,21 +43,42 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Taboo2Application.class)
 @WebAppConfiguration
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "repo-mocked"})
 public class Taboo2ServiceTests {
 // ------------------------------ FIELDS ------------------------------
 
+    /** the spring context. */
     @Autowired
-    WebApplicationContext wac;
+    private WebApplicationContext wac;
+
+    /** the service to test, set up in @Before method from the WebApplicationContext. Cannot be created with @Tested
+     * because we need internal spring DI resolution. */
+    Taboo2Service taboo2Service;
+
+    /** a mocked bookmark repository. */
+    @Injectable
+    private BookmarkRepository repository;
 
 // -------------------------- OTHER METHODS --------------------------
 
     @Test
     public void checkRunning() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(taboo2Service).build();
+
         mockMvc.perform(get(Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_CHECK).accept(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
                 .andExpect(content().string(Taboo2Service.IS_RUNNING))
         ;
+    }
+
+    /**
+     * set up the Service to be tested from the WebApplication context and replace the contained BookmarkRepository
+     * with a mock.
+     */
+    @Before
+    public void setupTest() {
+        taboo2Service = wac.getBean(Taboo2Service.class);
+        Deencapsulation.setField(taboo2Service, repository);
+        taboo2Service.logInfoToDebug();
     }
 }
