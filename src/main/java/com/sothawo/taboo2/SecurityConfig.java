@@ -51,11 +51,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        log.debug("configuring http, requires ssl: {}", securityProperties.isRequireSsl());
-        if (securityProperties.isRequireSsl()) {
+        boolean requireSsl = securityProperties.isRequireSsl();
+        boolean basicEnabled = securityProperties.getBasic().isEnabled();
+        log.debug("configuring http, requires ssl: {}, basic authentication: {}", requireSsl, basicEnabled);
+        if (requireSsl) {
             http.requiresChannel().anyRequest().requiresSecure();
         }
-        http.authorizeRequests().anyRequest().fullyAuthenticated();
+        if (basicEnabled) {
+            http.authorizeRequests().anyRequest().fullyAuthenticated();
+        }
         http.httpBasic().realmName("Taboo2");
         http.csrf().disable();
     }
