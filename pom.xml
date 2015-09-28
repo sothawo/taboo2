@@ -27,6 +27,7 @@
         <jmockit.version>1.16</jmockit.version>
         <jsonPath.version>2.0.0</jsonPath.version>
         <junit.version>4.12</junit.version>
+        <jsoup.version>1.8.2</jsoup.version>
     </properties>
 
 	<parent>
@@ -51,11 +52,16 @@
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <!-- for loading titles from websites -->
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
             </dependency>
 
             <dependency>
@@ -117,6 +123,11 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+        <!-- for loading titles from websites -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
         </dependency>
 
         <!-- Test -->
