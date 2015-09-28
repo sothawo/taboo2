@@ -55,15 +55,8 @@ public class Taboo2UserService implements UserDetailsService {
     @Autowired
     Taboo2Configuration taboo2Configuration;
 
-    // todo: remove this implementation
-    /** dummy implementation for the beginning */
-    private final Map<String, String> userPasswords = new HashMap<>();
-
     /** Map with known users. Key is the username, password ist hashed */
     private final Map<String, User> knownUsers = new HashMap<>();
-
-    {
-    }
 
 // ------------------------ INTERFACE METHODS ------------------------
 
