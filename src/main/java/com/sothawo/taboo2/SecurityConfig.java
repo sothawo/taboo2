@@ -58,12 +58,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             http.requiresChannel().anyRequest().requiresSecure();
         }
         if (basicEnabled) {
-            // we only need authorizaiton on the rest service api, the static content is accesible
-            http.authorizeRequests()
-                    .antMatchers(Taboo2Service.MAPPING_TABOO2 + "/**").authenticated()
-                    .anyRequest().permitAll();
+            http.authorizeRequests().anyRequest().authenticated();
         }
-        http.httpBasic().realmName("Taboo2");
+        http.httpBasic().realmName("taboo2");
         http.csrf().disable();
     }
 
