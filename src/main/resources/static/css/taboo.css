@@ -1,0 +1,39 @@
+
+body {
+    margin-top: 20px;
+    font: 300 16px/1.55 "Open Sans", sans-serif;
+}
+
+#bookmarkEntry button {
+    margin-top: 25px;
+}
+
+#clearButton {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+#searchText {
+    width: 100%;
+}
+
+.bookmark-table .bookmark-title {
+    font-size: larger;
+}
+
+.bookmark-table .bookmark-url {
+}
+
+.bookmark-table .bookmark-tags {
+    font-size: smaller;
+}
+
+.bookmark-table button {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.taglist-entry {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
