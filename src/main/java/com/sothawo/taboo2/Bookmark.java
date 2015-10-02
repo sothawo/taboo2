@@ -107,10 +107,13 @@ public final class Bookmark {
      * @param tag
      *         new tag
      * @throws NullPointerException
-     *         when tga is null
+     *         when tag is null
      */
     public void addTag(final String tag) {
-        tags.add(Objects.requireNonNull(tag).toLowerCase());
+        String tagToStore = Objects.requireNonNull(tag).toLowerCase();
+        if (!tagToStore.isEmpty()) {
+            tags.add(tagToStore);
+        }
     }
 
     /**

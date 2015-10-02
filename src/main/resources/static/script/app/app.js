@@ -185,20 +185,27 @@ function TabooVM($http, tabooService) {
             var bookmark = new Bookmark();
             bookmark.url = self.newBookmarkUrl;
             bookmark.title = self.newBookmarkTitle;
-            bookmark.tags = self.newBookmarkTags.toLowerCase().split(/[^a-zA-ZäöüÄÖÜß0-9]+/i);
+            bookmark.tags = self.newBookmarkTags
+                .toLowerCase()
+                .split(/[^a-zA-ZäöüÄÖÜß0-9]+/i)
+                .filter(function(t) {
+                    return !(t === '');
+                });
 
             if(self.editBookmarkId) {
                 bookmark.id = self.editBookmarkId;
                 $http.put(tabooService.urlService + tabooService.pathBookmarks, bookmark)
                     .then(function (result) {
-                        self.setSelectedTags(bookmark.tags);
+                        var createdBookmark = result.data;
+                        self.setSelectedTags(createdBookmark.tags);
                     }).catch(function (result) {
                         alert("Error: " + result.status + " " + result.statusText);
                     });
             } else {
                 $http.post(tabooService.urlService + tabooService.pathBookmarks, bookmark)
                     .then(function (result) {
-                        self.setSelectedTags(bookmark.tags);
+                        var createdBookmark = result.data;
+                        self.setSelectedTags(createdBookmark.tags);
                     }).catch(function (result) {
                         alert("Error: " + result.status + " " + result.statusText);
                     });
