@@ -66,7 +66,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 public class Taboo2ServiceTests {
 // ------------------------------ FIELDS ------------------------------
 
-    // couple of conveninence constants
+    // couple of convenience constants
     private final static String TABOO2_BOOKMARKS = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_BOOKMARKS;
     private final static String TABOO2_TAGS = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_TAGS;
     private final static String TABOO2_TITLE = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_TITLE;
