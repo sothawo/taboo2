@@ -57,12 +57,4 @@ public class BookmarkTest {
         assertThat(tags, hasSize(1));
         assertThat(tags, hasItem("abc"));
     }
-
-    @Test
-    public void emptyTagsAreIgnored() throws Exception {
-        Collection<String> tags = aBookmark().withUrl("url").addTag("").addTag("abc").build().getTags();
-
-        assertThat(tags, hasSize(1));
-        assertThat(tags, hasItem("abc"));
-    }
 }

@@ -129,6 +129,26 @@ public class Taboo2ServiceTests {
     }
 
     @Test
+
+    public void createBookmarksWithEmptyTagYieldsPreconditionFailed() throws Exception {
+        Bookmark bookmarkIn = aBookmark().withUrl("url").withTitle("title").addTag("tag").addTag("").
+                build();
+
+        MockMvc mockMvc = standaloneSetup(taboo2Service).build();
+        mockMvc.perform(post(TABOO2_BOOKMARKS)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmarkIn)))
+                .andExpect(status().isPreconditionFailed())
+        ;
+
+        new Verifications() {{
+            repository.createBookmark((Bookmark) any);
+            times = 0;
+        }};
+    }
+
+    @Test
     public void createBookmarksWithExistingUrlYieldsConflict() throws Exception {
         Bookmark bookmarkIn = aBookmark().withUrl("url").withTitle("title").addTag("tag").build();
 

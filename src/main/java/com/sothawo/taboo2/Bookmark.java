@@ -110,10 +110,7 @@ public final class Bookmark {
      *         when tag is null
      */
     public void addTag(final String tag) {
-        String tagToStore = Objects.requireNonNull(tag).toLowerCase();
-        if (!tagToStore.isEmpty()) {
-            tags.add(tagToStore);
-        }
+        tags.add(Objects.requireNonNull(tag).toLowerCase());
     }
 
     /**

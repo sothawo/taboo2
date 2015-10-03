@@ -118,7 +118,7 @@ public class Taboo2Service {
      *         uri component builder to build the created uri
      * @return the created bookmark
      * @throws IllegalArgumentException
-     *         when bookmark is null or has it's id set
+     *         when bookmark is null or has it's id set or one of the tags is an empty string
      */
     @RequestMapping(value = MAPPING_BOOKMARKS, method = RequestMethod.POST)
     public final ResponseEntity<Bookmark> createBookmark(@RequestBody final Bookmark bookmark,
@@ -128,6 +128,9 @@ public class Taboo2Service {
         }
         if (null != bookmark.getId()) {
             throw new IllegalArgumentException("id must not be set");
+        }
+        if (bookmark.getTags().stream().filter(String::isEmpty).findFirst().isPresent()) {
+            throw new IllegalArgumentException("tags must not be empty");
         }
 
         Bookmark createdBookmark = repository.createBookmark(bookmark);
