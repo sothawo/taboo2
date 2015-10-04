@@ -102,7 +102,7 @@ public class Taboo2Service {
     /**
      * simple method that returns a fixed string when called. Used to check if the service is running.
      *
-     * @return
+     * @return #IS_RUNNING
      */
     @RequestMapping(value = MAPPING_CHECK, method = RequestMethod.GET)
     public final String check() {
@@ -136,7 +136,7 @@ public class Taboo2Service {
         Bookmark createdBookmark = repository.createBookmark(bookmark);
         HttpHeaders headers = new HttpHeaders();
         URI locationUri = ucb
-                .path(MAPPING_TABOO2 + MAPPING_BOOKMARKS + "/")
+                .path(MAPPING_TABOO2 + MAPPING_BOOKMARKS + '/')
                 .path(String.valueOf(createdBookmark.getId()))
                 .build().toUri();
         headers.setLocation(locationUri);

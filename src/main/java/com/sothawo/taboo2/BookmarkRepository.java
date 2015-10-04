@@ -90,6 +90,8 @@ public interface BookmarkRepository {
      *         the tags to be searched
      * @param opAnd
      *         if true, the tags are to be combined using AND, otherwise OR
+     * @param s
+     *         the string to search for
      * @return the found bookmarks
      */
     Collection<Bookmark> getBookmarksWithTagsAndSearch(Collection<String> tags, boolean opAnd, String s);

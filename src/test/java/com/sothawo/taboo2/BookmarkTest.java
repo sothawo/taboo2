@@ -17,6 +17,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
+@SuppressWarnings("RedundantThrows")
 public class BookmarkTest {
 // -------------------------- OTHER METHODS --------------------------
 

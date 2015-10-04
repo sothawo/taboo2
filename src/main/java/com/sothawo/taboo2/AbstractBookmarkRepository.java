@@ -27,7 +27,7 @@ public abstract class AbstractBookmarkRepository implements BookmarkRepository {
      * and {@link BookmarkRepository#getBookmarksWithSearch(String)} and builds the intersection of both returned
      * collections. Deriving classes might implement a more performant search.
      *
-     * @see BookmarkRepository#getBookmarksWithTagsAndSearch(Collection, boolean, String).
+     * @see BookmarkRepository#getBookmarksWithTagsAndSearch(Collection, boolean, String)
      */
     @Override
     public Collection<Bookmark> getBookmarksWithTagsAndSearch(Collection<String> tags, boolean opAnd, String s) {

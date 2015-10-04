@@ -9,6 +9,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static com.sothawo.taboo2.BookmarkBuilder.aBookmark;
@@ -181,7 +182,7 @@ public class RepositoryTest {
         repository.createBookmark(bookmark3);
 
         Collection<Bookmark> bookmarks =
-                repository.getBookmarksWithTagsAndSearch(Arrays.asList("tag1"), true, "hello");
+                repository.getBookmarksWithTagsAndSearch(Collections.singletonList("tag1"), true, "hello");
 
         assertThat(bookmarks, hasSize(1));
         assertThat(bookmarks, hasItems(bookmark1));

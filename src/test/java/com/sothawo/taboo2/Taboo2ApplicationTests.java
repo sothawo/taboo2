@@ -28,6 +28,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ActiveProfiles({"test", "repo-inmemory"})
 public class Taboo2ApplicationTests {
 
+	@SuppressWarnings("EmptyMethod")
 	@Test
 	public void contextLoads() {
 	}

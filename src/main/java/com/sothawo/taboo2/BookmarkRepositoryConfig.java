@@ -46,6 +46,7 @@ public class BookmarkRepositoryConfig {
      *
      * @return null
      */
+    @SuppressWarnings("SameReturnValue")
     @Bean(name = "nullBookmarkRepository")
     @Profile("repo-mocked")
     public BookmarkRepository nullBookmarkRepository() {

@@ -59,6 +59,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
+@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Taboo2Application.class)
 @WebAppConfiguration
@@ -391,7 +392,7 @@ public class Taboo2ServiceTests {
     @Test
     public void getBookmarksWithTagAndSearch() throws Exception {
         Bookmark bookmark = createBookmarks("1").get(0);
-        Collection<String> tags = Arrays.asList("tag1");
+        Collection<String> tags = Collections.singletonList("tag1");
         String search = "search1";
 
         new Expectations() {{
@@ -468,9 +469,9 @@ public class Taboo2ServiceTests {
     @Test
     public void titleForBookmark() throws Exception {
         MockMvc mockMvc = standaloneSetup(taboo2Service).build();
-        mockMvc.perform(get(TABOO2_TITLE).param("url", taboo2Service.MAGIC_TEST_URL))
+        mockMvc.perform(get(TABOO2_TITLE).param("url", Taboo2Service.MAGIC_TEST_URL))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url", is(taboo2Service.MAGIC_TEST_URL)));
+                .andExpect(jsonPath("$.url", is(Taboo2Service.MAGIC_TEST_URL)));
     }
 
     @Test
