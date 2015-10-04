@@ -13,4 +13,4 @@ echo "############################################"
 cd $OPENSHIFT_REPO_DIR
 ./.openshift/mvn package -s .openshift/settings.xml -DskipTests=true
 mv target/taboo2-*.jar .
-mvn clean
+./.openshift/mvn clean -s .openshift/settings.xml
