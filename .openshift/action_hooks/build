@@ -12,3 +12,5 @@ echo "############################################"
 # call our own mvn script with the right settings
 cd $OPENSHIFT_REPO_DIR
 ./.openshift/mvn package -s .openshift/settings.xml -DskipTests=true
+mv target/taboo2-*.jar .
+mvn clean
