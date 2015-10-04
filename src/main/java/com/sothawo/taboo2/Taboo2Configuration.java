@@ -34,6 +34,9 @@ public class Taboo2Configuration {
     /** Name of the file with user/password information */
     private String users = null;
 
+    /** version of the application */
+    private String version = "unknown";
+
 // --------------------- GETTER / SETTER METHODS ---------------------
 
     public String getInfo() {
@@ -50,5 +53,13 @@ public class Taboo2Configuration {
 
     public void setUsers(String users) {
         this.users = users;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

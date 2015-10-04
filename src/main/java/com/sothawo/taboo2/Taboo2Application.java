@@ -15,15 +15,37 @@
 */
 package com.sothawo.taboo2;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.core.env.Environment;
+
+import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 @EnableConfigurationProperties
 public class Taboo2Application {
+    /** Logger for the class. */
+    private final static Logger log = LoggerFactory.getLogger(Taboo2Application.class);
+
+    /** the application's environment. */
+    @Autowired
+    private Environment env;
+
+    /** the taboo2 configuration. */
+    @Autowired
+    private Taboo2Configuration taboo2Configuration;
 
     public static void main(String[] args) {
         SpringApplication.run(Taboo2Application.class, args);
+    }
+
+    @PostConstruct public void postConstruct() {
+        log.debug("Java vendor: {}", env.getProperty("java.vendor", "unknown"));
+        log.debug("Java version: {}", env.getProperty("java.version", "unknown"));
+        log.debug("taboo2 version: {}", taboo2Configuration.getVersion());
     }
 }

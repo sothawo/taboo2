@@ -93,10 +93,6 @@ public class Taboo2Service {
 
 // -------------------------- STATIC METHODS --------------------------
 
-    static {
-        log.debug("class {} loaded", Taboo2Service.class.getCanonicalName());
-    }
-
 // -------------------------- OTHER METHODS --------------------------
 
     /**
