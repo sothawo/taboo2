@@ -25,3 +25,9 @@ This file has lines with the following content:
 _username:hashedPassword:role1,...,roleN_
 
 The hashedPassword can be created with the _main_ method of the Taboo2UserService class.
+
+## Versions
+
+### 0.1.0
+
+The first version with the basic functionality and an inmemory repository.
