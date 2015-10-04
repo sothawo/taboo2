@@ -3,10 +3,16 @@
 # script. The application will work only if it binds to
 # $OPENSHIFT_DIY_IP:$OPENSHIFT_DIY_PORT
 
-JDK_LINK=jdk1.8
-
-export JAVA_HOME="$OPENSHIFT_DATA_DIR/$JDK_LINK"
+# export environment variables
+export JAVA_HOME="/etc/alternatives/java_sdk_1.8.0"
 export PATH=$JAVA_HOME/bin:$PATH
+
+cd $OPENSHIFT_REPO_DIR
+
+echo "############################################"
+echo "start application with java:"
+java -version
+echo "############################################"
 
 cd $OPENSHIFT_REPO_DIR
 nohup java -jar target/*.jar --spring.profiles.active=openshift,repo-inmemory &
