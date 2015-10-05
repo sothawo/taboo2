@@ -112,6 +112,18 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- available tags -->
+                                <div class="row">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">available tags</div>
+                                        <div class="panel-body">
+                                            <button ng-repeat="tag in vm.availableTags.getElements()"
+                                            ng-click="vm.addTagToSelection(tag)"
+                                            class="btn btn-default btn-sm taglist-entry" type="button">{{tag}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                                 <!-- selected tags -->
                                 <div class="row">
                                     <div class="panel panel-default">
@@ -119,18 +131,6 @@
                                         <div class="panel-body">
                                             <button ng-repeat="tag in vm.selectedTags.getElements()"
                                                     ng-click="vm.removeTagFromSelection(tag)"
-                                                    class="btn btn-default btn-sm taglist-entry" type="button">{{tag}}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- available tags -->
-                                <div class="row">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">available tags</div>
-                                        <div class="panel-body">
-                                            <button ng-repeat="tag in vm.availableTags.getElements()"
-                                                    ng-click="vm.addTagToSelection(tag)"
                                                     class="btn btn-default btn-sm taglist-entry" type="button">{{tag}}
                                             </button>
                                         </div>
