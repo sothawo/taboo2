@@ -50,7 +50,7 @@ import static com.sothawo.taboo2.BookmarkBuilder.aBookmark;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 @RestController // contains @ResponseBody
-@RequestMapping(Taboo2Service.MAPPING_TABOO2)
+@RequestMapping(value = Taboo2Service.MAPPING_TABOO2, produces = "application/json")
 public class Taboo2Service {
 // ------------------------------ FIELDS ------------------------------
 
@@ -96,13 +96,11 @@ public class Taboo2Service {
 // -------------------------- OTHER METHODS --------------------------
 
     /**
-     * simple method that returns a fixed string when called. Used to check if the service is running.
-     *
-     * @return #IS_RUNNING
+     * simple method that returns Status OK.
      */
     @RequestMapping(value = MAPPING_CHECK, method = RequestMethod.GET)
-    public final String check() {
-        return IS_RUNNING;
+    public final void check() {
+        log.info("check called");
     }
 
     /**

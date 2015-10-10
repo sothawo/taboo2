@@ -1,27 +1,26 @@
 /*
  Copyright 2015 Peter-Josef Meisch (pj.meisch@sothawo.com)
 
- Licensed under the Apache License, Version 2.0 (the "License");
+ Licensed under the Apache License, Version 2.0 (the 'License');
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
 
  http://www.apache.org/licenses/LICENSE-2.0
 
  Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
+ distributed under the License is distributed on an 'AS IS' BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
  */
 // define additional functions
 if (typeof String.prototype.startsWith != 'function') {
-    // see below for better implementation!
-    String.prototype.startsWith = function (str){
+    String.prototype.startsWith = function (str) {
         return this.lastIndexOf(str, 0) === 0;
     };
 }
 
-var app = angular.module('taboo', []);
+var app = angular.module('taboo', ['base64']);
 
 // set configuration for the backend service
 app.constant('tabooService', {
@@ -30,40 +29,79 @@ app.constant('tabooService', {
     urlService: '',
     pathBookmarks: '/taboo2/bookmarks',
     pathTags: '/taboo2/tags',
-    pathTitle: '/taboo2/title'
+    pathTitle: '/taboo2/title',
+    pathCheck: '/taboo2/check'
 });
 
 // create Controller that creates a ViewModel
-app.controller('TabooCtrl', function ($scope, $http, tabooService) {
-    $scope.vm = new TabooVM($http, tabooService);
+app.controller('TabooCtrl', function ($scope, $http, $base64, tabooService) {
+    $scope.vm = new TabooVM($http, $base64, tabooService);
 });
 
 
 // ViewModel
-function TabooVM($http, tabooService) {
+function TabooVM($http, $base64, tabooService) {
     var self = this;
     /** entry for new bookmark's url. */
-    this.newBookmarkUrl = "";
+    this.newBookmarkUrl = '';
     /** entry for new bookmark's title. */
-    this.newBookmarkTitle = "";
+    this.newBookmarkTitle = '';
     /** entry for the new bookmark's tags. */
-    this.newBookmarkTags = "";
+    this.newBookmarkTags = '';
     /** entry for the bookmark's id when editing */
-    this.editBookmarkId = "";
+    this.editBookmarkId = '';
     /** the bookmarks to show. */
     this.bookmarks = [];
     /** search field for bookmarks. */
-    this.searchText = "";
+    this.searchText = '';
     /** the list of selected tags. */
     this.selectedTags = new TabooSet();
     /** the list of available tags */
     this.availableTags = new TabooSet();
 
+    /** the username and password */
+    this.username = '';
+    this.password = '';
+    /** the authentication state ('success', any other value is not authenticated */
+    this.authenticated = '';
+
+
+
+    /**
+     * calls the backend with the given credential. whenn succesful, stores the auth header an sets the
+     * authenticated state.
+     */
+    this.tryLogin = function() {
+        var authHeader = 'Basic ' + $base64.encode(self.username + ':' + self.password);
+        var headers = {'Authorization': authHeader};
+        $http
+            .get(tabooService.urlService + tabooService.pathCheck, {headers: headers})
+            .then(
+                function (response) {
+                    $http.defaults.headers.common['Authorization'] = authHeader;
+                    self.authenticated = 'success';
+                    self.clearSelection();
+                },
+                function (response) {
+                    alert('Error: ' + response.status + ' ' + response.statusText);
+                }
+            );
+    }
+
+    /**
+     * reset the login information.
+     */
+    this.logout = function() {
+        this.authenticated = '';
+        this.username = '';
+        this.password = '';
+    }
+
     /**
      * clears all selection data and ses the selected tags to empty.
      */
     this.clearSelection = function () {
-        self.searchText = "";
+        self.searchText = '';
         self.setSelectedTags([]);
     }
 
@@ -110,11 +148,11 @@ function TabooVM($http, tabooService) {
         var paramsAreSet = false;
         var params = {};
         if (self.selectedTags.size() > 0) {
-            params["tag"] = self.selectedTags.getElements();
+            params['tag'] = self.selectedTags.getElements();
             paramsAreSet = true;
         }
         if (self.searchText) {
-            params["search"] = self.searchText;
+            params['search'] = self.searchText;
             paramsAreSet = true;
         }
 
@@ -130,8 +168,8 @@ function TabooVM($http, tabooService) {
                     }
                     self.setBookmarksToShow(bookmarks);
                 }).catch(function (result) {
-                    alert("Error: " + result.status + " " + result.statusText);
-                });
+                alert('Error: ' + result.status + ' ' + result.statusText);
+            });
         } else {
             // only get the tags
             $http.get(tabooService.urlService + tabooService.pathTags)
@@ -139,8 +177,8 @@ function TabooVM($http, tabooService) {
                     self.setBookmarksToShow([]);
                     self.availableTags = new TabooSet(result.data);
                 }).catch(function (result) {
-                    alert("Error: " + result.status + " " + result.statusText);
-                });
+                alert('Error: ' + result.status + ' ' + result.statusText);
+            });
         }
     };
 
@@ -172,43 +210,43 @@ function TabooVM($http, tabooService) {
                     self.newBookmarkUrl = result.data.url;
                     self.newBookmarkTitle = result.data.title;
                 }).catch(function (result) {
-                    alert("Error: " + result.status + " " + result.statusText);
-                });
+                alert('Error: ' + result.status + ' ' + result.statusText);
+            });
         }
     };
 
     /**
      * saves a new or updated bookmark to the backend.
      */
-    this.saveEntryData = function() {
-        if(self.newBookmarkUrl) {
+    this.saveEntryData = function () {
+        if (self.newBookmarkUrl) {
             var bookmark = new Bookmark();
             bookmark.url = self.newBookmarkUrl;
             bookmark.title = self.newBookmarkTitle;
             bookmark.tags = self.newBookmarkTags
                 .toLowerCase()
                 .split(/[^a-zA-ZäöüÄÖÜß0-9]+/i)
-                .filter(function(t) {
+                .filter(function (t) {
                     return !(t === '');
                 });
 
-            if(self.editBookmarkId) {
+            if (self.editBookmarkId) {
                 bookmark.id = self.editBookmarkId;
                 $http.put(tabooService.urlService + tabooService.pathBookmarks, bookmark)
                     .then(function (result) {
                         var createdBookmark = result.data;
                         self.setSelectedTags(createdBookmark.tags);
                     }).catch(function (result) {
-                        alert("Error: " + result.status + " " + result.statusText);
-                    });
+                    alert('Error: ' + result.status + ' ' + result.statusText);
+                });
             } else {
                 $http.post(tabooService.urlService + tabooService.pathBookmarks, bookmark)
                     .then(function (result) {
                         var createdBookmark = result.data;
                         self.setSelectedTags(createdBookmark.tags);
                     }).catch(function (result) {
-                        alert("Error: " + result.status + " " + result.statusText);
-                    });
+                    alert('Error: ' + result.status + ' ' + result.statusText);
+                });
             }
         }
     };
@@ -217,9 +255,9 @@ function TabooVM($http, tabooService) {
      * clears the entry fields for new bookmarks.
      */
     this.clearEntryData = function () {
-        self.newBookmarkUrl = "";
-        self.newBookmarkTitle = "";
-        self.newBookmarkTags = "";
+        self.newBookmarkUrl = '';
+        self.newBookmarkTitle = '';
+        self.newBookmarkTags = '';
         self.editBookmarkId = undefined;
     };
 
@@ -227,15 +265,15 @@ function TabooVM($http, tabooService) {
      * deletes a bookmark from the backend.
      * @param bookmark the bookmark to delete
      */
-    this.deleteBookmark = function(bookmark) {
-        if(bookmark) {
+    this.deleteBookmark = function (bookmark) {
+        if (bookmark) {
             // todo: confirm
             $http.delete(tabooService.urlService + tabooService.pathBookmarks + '/' + bookmark.id)
-                .then(function(result){
+                .then(function (result) {
                     self.reloadBookmarks();
                 })
-                .catch(function(result){
-                    alert("Error: " + result.status + " " + result.statusText);
+                .catch(function (result) {
+                    alert('Error: ' + result.status + ' ' + result.statusText);
                 });
         }
     };
@@ -244,17 +282,14 @@ function TabooVM($http, tabooService) {
      * sets the data of the given bookmark in the controls for editing.
      * @param bookmark the bookmark to edit
      */
-    this.editBookmark = function(bookmark) {
-        if(bookmark) {
+    this.editBookmark = function (bookmark) {
+        if (bookmark) {
             self.newBookmarkUrl = bookmark.url;
             self.newBookmarkTitle = bookmark.title;
             self.newBookmarkTags = bookmark.joinedTags();
             self.editBookmarkId = bookmark.id;
         }
     };
-
-    //initial setup
-    self.clearSelection();
 }
 
 
@@ -265,7 +300,7 @@ function TabooVM($http, tabooService) {
  */
 function Bookmark(restBookmark) {
     var self = this;
-    if(restBookmark) {
+    if (restBookmark) {
         this.id = restBookmark.id;
         this.url = restBookmark.url;
         this.title = restBookmark.title;
@@ -273,13 +308,13 @@ function Bookmark(restBookmark) {
         this.tagsSet = new TabooSet(restBookmark.tags);
     } else {
         this.id = undefined;
-        this.url = "";
-        this.title = ""
+        this.url = '';
+        this.title = ''
         this.tags = [];
         this.tagsSet = new TabooSet();
     }
 
-    if(!(this.url.startsWith('http://') || this.url.startsWith('https://'))) {
+    if (!(this.url.startsWith('http://') || this.url.startsWith('https://'))) {
         this.urlWithPrefix = 'http://' + this.url;
     } else {
         this.urlWithPrefix = this.url;

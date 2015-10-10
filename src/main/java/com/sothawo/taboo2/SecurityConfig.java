@@ -58,7 +58,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             http.requiresChannel().anyRequest().requiresSecure();
         }
         if (basicEnabled) {
-            http.authorizeRequests().anyRequest().authenticated();
+            // authentication for the taboo2 service only, the app itself doesn't need use it to display it's own login
+            // form.
+            http.authorizeRequests()
+                    .antMatchers("/taboo2/**").authenticated()
+                    .anyRequest().permitAll();
         }
         http.httpBasic().realmName("taboo2");
         http.csrf().disable();
