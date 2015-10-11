@@ -66,6 +66,9 @@ function TabooVM($http, $base64, tabooService) {
     this.authenticated = '';
 
 
+    /** flag wether new bookmark panel content is visible. */
+    this.newBookmarkVisible = false;
+
 
     /**
      * calls the backend with the given credential. whenn succesful, stores the auth header an sets the
@@ -95,6 +98,13 @@ function TabooVM($http, $base64, tabooService) {
         this.authenticated = '';
         this.username = '';
         this.password = '';
+    }
+
+    /**
+     * toggles that flag that determines the visibility of the new bookmark entry.
+     */
+    this.toggleNewBookmarkVisibility = function() {
+        this.newBookmarkVisible = !this.newBookmarkVisible;
     }
 
     /**

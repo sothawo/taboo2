@@ -75,8 +75,8 @@
                 <!-- panel for new bookmark entry -->
                 <div class="row" id="bookmarkEntry">
                     <div class="panel panel-default">
-                        <div class="panel-heading">new bookmark</div>
-                        <div class="panel-body">
+                        <div class="panel-heading" ng-click="vm.toggleNewBookmarkVisibility()">new bookmark</div>
+                        <div class="panel-body" ng-show="vm.newBookmarkVisible">
                             <div class="container-fluid">
                                 <!-- row for url and load-title button -->
                                 <div class="row">
