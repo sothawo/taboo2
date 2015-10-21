@@ -72,9 +72,6 @@ public class Taboo2Service {
     /** Mapping for check call, package scope for test class. */
     static final String MAPPING_CHECK = "/check";
 
-    /** Result of check call, package scope for test class. */
-    static final String IS_RUNNING = "running";
-
     /** needed for tests. */
     static final String MAGIC_TEST_URL = "magicTestStringThatsNotAnUrl";
 

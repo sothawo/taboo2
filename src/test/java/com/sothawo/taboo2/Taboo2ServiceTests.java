@@ -92,7 +92,6 @@ public class Taboo2ServiceTests {
         mockMvc.perform(get(TABOO2_CHECK).
                 accept(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
-                .andExpect(content().string(Taboo2Service.IS_RUNNING))
         ;
     }
 
