@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Repository implementation using a H2 database. Uses liquibase on creation to update the database if necessary.
+ * Repository implementation using a H2 database.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
