@@ -3,16 +3,21 @@
  *
  * http://www.sothawo.com
  */
-package com.sothawo.taboo2;
+package com.sothawo.taboo2.repository;
+
+import com.sothawo.taboo2.AlreadyExistsException;
+import com.sothawo.taboo2.Bookmark;
+import com.sothawo.taboo2.NotFoundException;
 
 import java.util.Collection;
 
 /**
- * Implementations of this interface store and retrieve Bookmarks.
+ * Implementations of this interface store and retrieve Bookmarks. Extends AutoCloseable so it might be used in
+ * contexts using this feature.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
-public interface BookmarkRepository {
+public interface BookmarkRepository extends AutoCloseable {
 // -------------------------- OTHER METHODS --------------------------
 
     /**

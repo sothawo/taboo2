@@ -3,9 +3,12 @@
  *
  * http://www.sothawo.com
  */
-package com.sothawo.taboo2;
+package com.sothawo.taboo2.repository;
 
 import com.google.common.collect.Sets;
+import com.sothawo.taboo2.AlreadyExistsException;
+import com.sothawo.taboo2.Bookmark;
+import com.sothawo.taboo2.NotFoundException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,6 +35,12 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
 
 // ------------------------ INTERFACE METHODS ------------------------
 
+
+// --------------------- Interface AutoCloseable ---------------------
+
+    @Override
+    public void close() throws Exception {
+    }
 
 // --------------------- Interface BookmarkRepository ---------------------
 
@@ -150,5 +159,22 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
         }
         deleteBookmark(id);
         bookmarks.put(bookmark.getUrl(), bookmark);
+    }
+
+// -------------------------- INNER CLASSES --------------------------
+
+    /**
+     * Factory class implementation.
+     */
+    public static class Factory implements BookmarkRepositoryFactory {
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface BookmarkRepositoryFactory ---------------------
+
+        @Override
+        public BookmarkRepository create(String[] args) {
+            return new InMemoryRepository();
+        }
     }
 }

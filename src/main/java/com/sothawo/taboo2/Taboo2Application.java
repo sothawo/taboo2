@@ -24,10 +24,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 @SpringBootApplication
 @EnableConfigurationProperties
 public class Taboo2Application {
+// ------------------------------ FIELDS ------------------------------
+
     /** Logger for the class. */
     private final static Logger log = LoggerFactory.getLogger(Taboo2Application.class);
 
@@ -39,13 +42,18 @@ public class Taboo2Application {
     @Autowired
     private Taboo2Configuration taboo2Configuration;
 
-    public static void main(String[] args) {
-        SpringApplication.run(Taboo2Application.class, args);
-    }
+// -------------------------- OTHER METHODS --------------------------
 
-    @PostConstruct public void postConstruct() {
+    @PostConstruct
+    public void postConstruct() {
         log.debug("Java vendor: {}", env.getProperty("java.vendor", "unknown"));
         log.debug("Java version: {}", env.getProperty("java.version", "unknown"));
         log.debug("taboo2 version: {}", taboo2Configuration.getVersion());
+    }
+
+// --------------------------- main() method ---------------------------
+
+    public static void main(String[] args) {
+        SpringApplication.run(Taboo2Application.class, args);
     }
 }

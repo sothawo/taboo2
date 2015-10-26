@@ -37,6 +37,12 @@
         <jsonPath.version>2.0.0</jsonPath.version>
         <junit.version>4.12</junit.version>
         <jsoup.version>1.8.2</jsoup.version>
+
+        <hibernate.version>4.3.8.Final</hibernate.version>
+        <h2.version>1.4.185</h2.version>
+        <liquibase.version>3.3.2</liquibase.version>
+        <liquibase.slf4j.version>1.2.1</liquibase.slf4j.version>
+
     </properties>
 
 	<parent>
@@ -71,6 +77,46 @@
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
+            </dependency>
+
+            <!-- get liquibase to slf4j logging, compile, so that it's on the classpath when running from IDE-->
+            <dependency>
+                <groupId>com.mattbertolini</groupId>
+                <artifactId>liquibase-slf4j</artifactId>
+                <version>${liquibase.slf4j.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <!-- database -->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>${hibernate.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-c3p0</artifactId>
+                <version>${hibernate.version}</version>
+                <scope>compile</scope>
             </dependency>
 
             <dependency>
@@ -110,12 +156,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <!--
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
-        -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -133,10 +173,32 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
+
         <!-- for loading titles from websites -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-c3p0</artifactId>
         </dependency>
 
         <!-- Test -->

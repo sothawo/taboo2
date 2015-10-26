@@ -3,9 +3,10 @@
  *
  * http://www.sothawo.com
  */
-package com.sothawo.taboo2;
+package com.sothawo.taboo2.repository;
 
 import com.google.common.collect.Sets;
+import com.sothawo.taboo2.Bookmark;
 
 import java.util.Collection;
 import java.util.HashSet;

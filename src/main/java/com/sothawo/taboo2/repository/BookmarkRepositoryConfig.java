@@ -13,11 +13,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.sothawo.taboo2;
+package com.sothawo.taboo2.repository;
 
+import com.sothawo.taboo2.repository.h2.H2Repository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 
 /**
  * configuration for BookmarkRepositories. The class must produce a BookmarkRepository implementation for each of the
@@ -27,6 +30,10 @@ import org.springframework.context.annotation.Profile;
  */
 @Configuration
 public class BookmarkRepositoryConfig {
+    /** the application's environment. */
+    @Autowired
+    private Environment env;
+
 // -------------------------- OTHER METHODS --------------------------
 
     /**
@@ -38,6 +45,18 @@ public class BookmarkRepositoryConfig {
     @Profile("repo-inmemory")
     public BookmarkRepository defaultBookmarkRepository() {
         return new InMemoryRepository();
+    }
+
+    /**
+     * H" database repository implementation, used when repo-h2 profile is active.
+     *
+     * @return H2 Bookmark Repository
+     */
+    @SuppressWarnings("SameReturnValue")
+    @Bean(name = "h1BookmarkRepository")
+    @Profile("repo-h2")
+    public BookmarkRepository h2BookmarkRepository() {
+        return new H2Repository(env.getProperty("h2.jdbcUrl", "undefined property h2.jdbcurl"));
     }
 
     /**

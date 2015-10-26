@@ -1,5 +1,10 @@
-package com.sothawo.taboo2;
+package com.sothawo.taboo2.repository;
 
+import com.sothawo.taboo2.AlreadyExistsException;
+import com.sothawo.taboo2.Bookmark;
+import com.sothawo.taboo2.NotFoundException;
+import com.sothawo.taboo2.repository.h2.H2Repository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,8 +33,13 @@ import static org.junit.Assert.fail;
 public class RepositoryTest {
 // ------------------------------ FIELDS ------------------------------
 
+    private static final String H2_JDBC_URL_TEST = "jdbc:h2:./target/bookmark-db-test";
+
     @Parameter(0)
-    public Class<BookmarkRepository> repositoryClass;
+    public Class<BookmarkRepositoryFactory> repositoryFactoryClass;
+
+    @Parameter(1)
+    public String[] repositoryFactoryArguments;
 
     /** created in #setupRepository() method */
     private BookmarkRepository repository;
@@ -37,8 +47,8 @@ public class RepositoryTest {
 // -------------------------- STATIC METHODS --------------------------
 
     /**
-     * get the parameters for the tests. For every test class execution this is a list of {BookmarkFactory.class,
-     * String[] factoryOptions}
+     * get the parameters for the tests. For every test class execution this is an array of a
+     * BookmarkRepositoryFactory.class and an array of creatin arguments.
      *
      * @return test parameters
      */
@@ -46,11 +56,17 @@ public class RepositoryTest {
     public static List<Object[]> parameters() {
         return Arrays.asList(new Object[][]
                 {
-                        {InMemoryRepository.class},
-                        });
+                        {InMemoryRepository.Factory.class, null},
+                        {H2Repository.Factory.class, new String[]{H2_JDBC_URL_TEST}}
+                });
     }
 
 // -------------------------- OTHER METHODS --------------------------
+
+    @After
+    public void closeRepository() throws Exception {
+        repository.close();
+    }
 
     @Test
     public void createBookmark() throws Exception {
@@ -74,6 +90,12 @@ public class RepositoryTest {
         fail("expected IllegalArgumentException");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void createBookmarkWithoutUrl() throws Exception {
+        repository.createBookmark(aBookmark().withTitle("title").build());
+        fail("excpected IllegalArgumentException");
+    }
+
     @Test(expected = AlreadyExistsException.class)
     public void createBookmarksWithExistingUrl() throws Exception {
         Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build();
@@ -82,12 +104,6 @@ public class RepositoryTest {
         repository.createBookmark(bookmark1);
         repository.createBookmark(bookmark2);
         fail("expected AlreadyExistsException");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void createBookmarkWithoutUrl() throws Exception {
-        repository.createBookmark(aBookmark().withTitle("title").build());
-        fail("excpected IllegalArgumentException");
     }
 
     @Test
@@ -245,7 +261,7 @@ public class RepositoryTest {
 
     @Before
     public void setupRepository() throws Exception {
-        repository = repositoryClass.newInstance();
+        repository = repositoryFactoryClass.newInstance().create(repositoryFactoryArguments);
         repository.purge();
     }
 

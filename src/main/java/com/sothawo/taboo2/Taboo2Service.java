@@ -15,6 +15,7 @@
 */
 package com.sothawo.taboo2;
 
+import com.sothawo.taboo2.repository.BookmarkRepository;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
@@ -55,7 +57,7 @@ public class Taboo2Service {
 // ------------------------------ FIELDS ------------------------------
 
     /** Logger for the class. */
-    private final static Logger log = LoggerFactory.getLogger(Taboo2Service.class);
+    private final static Logger LOG = LoggerFactory.getLogger(Taboo2Service.class);
 
     /** Mapping for the class, package scope for test class. */
     static final String MAPPING_TABOO2 = "/taboo2";
@@ -88,8 +90,6 @@ public class Taboo2Service {
     @Autowired
     private BookmarkRepository repository;
 
-// -------------------------- STATIC METHODS --------------------------
-
 // -------------------------- OTHER METHODS --------------------------
 
     /**
@@ -97,7 +97,16 @@ public class Taboo2Service {
      */
     @RequestMapping(value = MAPPING_CHECK, method = RequestMethod.GET)
     public final void check() {
-        log.info("check called");
+        LOG.info("check called");
+    }
+
+    @PreDestroy
+    public void close() {
+        try {
+            repository.close();
+        } catch (Exception e) {
+            LOG.warn("closing repository", e);
+        }
     }
 
     /**
@@ -267,16 +276,16 @@ public class Taboo2Service {
                 urlString = "http://" + urlString;
             }
             final String finalUrl = urlString;
-            log.debug("loading title for url {}", finalUrl);
+            LOG.debug("loading title for url {}", finalUrl);
             try {
                 String htmlTitle = Jsoup.connect(finalUrl).timeout(5000).get().title();
-                log.debug("got title: {}", htmlTitle);
+                LOG.debug("got title: {}", htmlTitle);
                 return new ResponseEntity<>(aBookmark().withUrl(finalUrl).withTitle(htmlTitle).build(), HttpStatus.OK);
             } catch (HttpStatusException e) {
-                log.info("loading url http error", e);
+                LOG.info("loading url http error", e);
                 return new ResponseEntity<>(HttpStatus.valueOf(e.getStatusCode()));
             } catch (IOException e) {
-                log.info("loading url error", e);
+                LOG.info("loading url error", e);
             }
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -284,8 +293,8 @@ public class Taboo2Service {
 
     @PostConstruct
     public void logInfoToDebug() {
-        log.debug("taboo2.info={}", taboo2Config.getInfo());
-        log.debug("bookmark repository implementation: {}", (null == repository) ? "null" : repository.getClass()
+        LOG.debug("taboo2.info={}", taboo2Config.getInfo());
+        LOG.debug("bookmark repository implementation: {}", (null == repository) ? "null" : repository.getClass()
                 .getCanonicalName());
     }
 
