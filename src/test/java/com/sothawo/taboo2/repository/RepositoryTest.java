@@ -3,9 +3,11 @@ package com.sothawo.taboo2.repository;
 import com.sothawo.taboo2.AlreadyExistsException;
 import com.sothawo.taboo2.Bookmark;
 import com.sothawo.taboo2.NotFoundException;
+import com.sothawo.taboo2.repository.h2.DBManager;
 import com.sothawo.taboo2.repository.h2.H2Repository;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,6 +36,7 @@ public class RepositoryTest {
 // ------------------------------ FIELDS ------------------------------
 
     private static final String H2_JDBC_URL_TEST = "jdbc:h2:./target/bookmark-db-test";
+    private static final String DB_CHANGELOG = "db/db-changelog.xml";
 
     @Parameter(0)
     public Class<BookmarkRepositoryFactory> repositoryFactoryClass;
@@ -44,6 +47,14 @@ public class RepositoryTest {
     /** created in #setupRepository() method */
     private BookmarkRepository repository;
 
+    /**
+     * run the database changelog file before running the tests.
+     */
+    @BeforeClass
+    public static void beforeClass() {
+        DBManager.updateDB(H2_JDBC_URL_TEST, DB_CHANGELOG);
+    }
+
 // -------------------------- STATIC METHODS --------------------------
 
     /**
@@ -52,7 +63,7 @@ public class RepositoryTest {
      *
      * @return test parameters
      */
-    @Parameters
+    @Parameters(name="{index}: factory: {0}, args: {1}")
     public static List<Object[]> parameters() {
         return Arrays.asList(new Object[][]
                 {

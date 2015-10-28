@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="pj.meisch@sothawo.com">
+        <comment>create BOOKMARKS table</comment>
+        <createTable tableName="BOOKMARKS">
+            <column name="ID" type="long">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="URL" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TITLE" type="varchar(512)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <!-- id column is identity -->
+        <addAutoIncrement tableName="BOOKMARKS" columnName="ID" columnDataType="long" startWith="100" incrementBy="1"/>
+    </changeSet>
+
+
+</databaseChangeLog>

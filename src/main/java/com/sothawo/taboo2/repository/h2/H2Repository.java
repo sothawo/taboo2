@@ -156,12 +156,20 @@ public class H2Repository implements BookmarkRepository {
 
 // --------------------- Interface BookmarkRepositoryFactory ---------------------
 
+        /**
+         * first argument is jdbcUrl
+         * @param args
+         *         arguments for the BookmarkRepository
+         * @return
+         */
         @Override
         public BookmarkRepository create(String[] args) {
             if (null == args || args.length < 1) {
                 throw new IllegalArgumentException();
             }
-            return new H2Repository(args[0]);
+
+            final String jdbcUrl = args[0];
+            return new H2Repository(jdbcUrl);
         }
     }
 }

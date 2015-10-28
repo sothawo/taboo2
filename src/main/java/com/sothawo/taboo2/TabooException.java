@@ -22,4 +22,16 @@ public class TabooException extends RuntimeException {
     public TabooException(final String message) {
         super(message);
     }
+
+    /**
+     * creates a TabbooException with message and cause.
+     *
+     * @param message
+     *         the message
+     * @param cause
+     *         the cause
+     */
+    public TabooException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
