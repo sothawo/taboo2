@@ -7,8 +7,8 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet id="1" author="pj.meisch@sothawo.com">
-        <comment>create BOOKMARKS table</comment>
-        <createTable tableName="BOOKMARKS">
+        <comment>create BOOKMARK table</comment>
+        <createTable tableName="BOOKMARK">
             <column name="ID" type="long">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -20,8 +20,51 @@
             </column>
         </createTable>
         <!-- id column is identity -->
-        <addAutoIncrement tableName="BOOKMARKS" columnName="ID" columnDataType="long" startWith="100" incrementBy="1"/>
+        <addAutoIncrement tableName="BOOKMARK" columnName="ID" columnDataType="long" startWith="100" incrementBy="1"/>
     </changeSet>
 
+    <changeSet id="2" author="pj.meisch@sothawo.com">
+        <comment>create TAG and BOOKMARK_TAG table</comment>
+        <createTable tableName="TAG">
+            <column name="ID" type="long">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="TAG" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <!-- id column is identity -->
+        <addAutoIncrement tableName="TAG" columnName="ID" columnDataType="long" startWith="100" incrementBy="1"/>
 
+        <createTable tableName="BOOKMARK_TAG">
+            <column name="BOOKMARK_ID" type="long">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TAG_ID" type="long">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- BOOKMARK_ID is FK into BOOKMARK table -->
+        <addForeignKeyConstraint baseTableName="BOOKMARK_TAG" baseColumnNames="BOOKMARK_ID"
+                                 constraintName="FK_BOOKMARK_TAG_BOOKMARK"
+                                 referencedTableName="BOOKMARK" referencedColumnNames="ID"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
+        <!-- TAG_ID is FK into TAG table -->
+        <addForeignKeyConstraint baseTableName="BOOKMARK_TAG" baseColumnNames="TAG_ID"
+                                 constraintName="FK_BOOKMARK_TAG_TAG"
+                                 referencedTableName="TAG" referencedColumnNames="ID"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
+
+    </changeSet>
+
+    <changeSet id="3" author="pj.meisch@spthawo.com">
+        <comment>create indices</comment>
+        <createIndex indexName="IDX_BOOKMARK_URL" tableName="BOOKMARK" unique="true">
+            <column name="URL"/>
+        </createIndex>
+        <createIndex indexName="IDX_TAG_TAG" tableName="TAG" unique="true">
+            <column name="TAG"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

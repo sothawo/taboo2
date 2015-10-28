@@ -5,22 +5,30 @@
  */
 package com.sothawo.taboo2.repository.h2;
 
+import com.sothawo.taboo2.AlreadyExistsException;
 import com.sothawo.taboo2.Bookmark;
 import com.sothawo.taboo2.repository.BookmarkRepository;
 import com.sothawo.taboo2.repository.BookmarkRepositoryFactory;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.util.BEncoderStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolver;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.sothawo.taboo2.BookmarkBuilder.aBookmark;
 
 /**
  * Repository implementation using a H2 database.
@@ -97,7 +105,51 @@ public class H2Repository implements BookmarkRepository {
 
     @Override
     public Bookmark createBookmark(Bookmark bookmark) {
-        throw new UnsupportedOperationException("not yet implemented.");
+        // check arguments
+        if (null != bookmark.getId() || null == bookmark.getUrl() || bookmark.getUrl().isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        // search existing
+
+        try {
+            EntityManager em = emf.createEntityManager();
+
+            // search existing
+            List resultList = em.createNamedQuery(BookmarkEntity.BOOKMARK_BY_URL).setParameter("url", bookmark.getUrl())
+                    .getResultList();
+            if (resultList.size() > 0) {
+                throw new AlreadyExistsException(MessageFormat.format("bookmark with url '{0}' already exists.",
+                        bookmark.getUrl()));
+            }
+
+            // insert new bookmark
+            EntityTransaction tx = em.getTransaction();
+
+            BookmarkEntity entity = new BookmarkEntity();
+            entity.setUrl(bookmark.getUrl());
+            entity.setTitle(bookmark.getTitle());
+
+            tx.begin();
+
+            em.persist(entity);
+            em.flush();
+
+
+            tx.commit();
+            em.close();
+
+            Bookmark createdBookmark = aBookmark()
+                    .withId(String.valueOf(entity.getId()))
+                    .withUrl(entity.getUrl())
+                    .withTitle(entity.getTitle())
+                    .build();
+            return createdBookmark;
+        } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
+            LOG.error("db error on creating bookmark", e);
+            return null;
+        }
+
     }
 
     @Override
@@ -137,7 +189,19 @@ public class H2Repository implements BookmarkRepository {
 
     @Override
     public void purge() {
-        throw new UnsupportedOperationException("not yet implemented.");
+        try {
+            EntityManager em = emf.createEntityManager();
+            EntityTransaction tx = em.getTransaction();
+            tx.begin();
+
+            em.createQuery("delete from BookmarkEntity b").executeUpdate();
+            em.createQuery("delete from TagEntity t").executeUpdate();
+
+            tx.commit();
+            em.close();
+        } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
+            LOG.error("db error on purging data", e);
+        }
     }
 
     @Override
@@ -158,6 +222,7 @@ public class H2Repository implements BookmarkRepository {
 
         /**
          * first argument is jdbcUrl
+         *
          * @param args
          *         arguments for the BookmarkRepository
          * @return

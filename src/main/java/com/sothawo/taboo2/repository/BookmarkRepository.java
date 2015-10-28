@@ -102,7 +102,7 @@ public interface BookmarkRepository extends AutoCloseable {
     Collection<Bookmark> getBookmarksWithTagsAndSearch(Collection<String> tags, boolean opAnd, String s);
 
     /**
-     * removes all bookmarks from the repository.
+     * removes all bookmarks and tags from the repository.
      */
     void purge();
 
