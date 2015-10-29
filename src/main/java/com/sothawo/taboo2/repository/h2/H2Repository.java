@@ -7,6 +7,7 @@ package com.sothawo.taboo2.repository.h2;
 
 import com.sothawo.taboo2.AlreadyExistsException;
 import com.sothawo.taboo2.Bookmark;
+import com.sothawo.taboo2.NotFoundException;
 import com.sothawo.taboo2.repository.BookmarkRepository;
 import com.sothawo.taboo2.repository.BookmarkRepositoryFactory;
 import org.slf4j.Logger;
@@ -29,9 +30,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.sothawo.taboo2.BookmarkBuilder.aBookmark;
 
@@ -155,7 +156,6 @@ public class H2Repository implements BookmarkRepository {
             em.persist(bookmarkEntity);
             em.flush();
 
-
             tx.commit();
             em.close();
 
@@ -168,7 +168,34 @@ public class H2Repository implements BookmarkRepository {
 
     @Override
     public void deleteBookmark(String id) {
-        throw new UnsupportedOperationException("not yet implemented.");
+        try {
+            Long bookmarkId = Long.valueOf(id);
+            EntityManager em = emf.createEntityManager();
+
+            EntityTransaction tx = em.getTransaction();
+            tx.begin();
+
+            BookmarkEntity bookmarkEntity = em.find(BookmarkEntity.class, bookmarkId);
+            if (null == bookmarkEntity) {
+                throw new NotFoundException("no bookmark with id " + id);
+            }
+
+            for (TagEntity tagEntity : bookmarkEntity.getTags()) {
+                Set<BookmarkEntity> tagBookmarks = tagEntity.getBookmarks();
+                tagEntity.getBookmarks().remove(bookmarkEntity);
+                if (tagBookmarks.size() == 0) {
+                    em.remove(tagEntity);
+                }
+            }
+            em.remove(bookmarkEntity);
+
+            tx.commit();
+            em.close();
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("non numeric id");
+        } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
+            LOG.error("db error on deleting bookmark", e);
+        }
     }
 
     @Override
@@ -205,12 +232,34 @@ public class H2Repository implements BookmarkRepository {
 
     @Override
     public Bookmark getBookmarkById(String id) {
-        throw new UnsupportedOperationException("not yet implemented.");
+        try {
+            return Optional.of(
+                    emf.createEntityManager().find(BookmarkEntity.class, Long.valueOf(id)))
+                    .map(this::bookmarkFromEntity)
+                    .orElseThrow(() -> new NotFoundException("no bookmark with id " + id));
+        } catch (Exception e) {
+            LOG.error("error on getting bookmark by id", e);
+        }
+        throw new NotFoundException("no bookmark with id " + id);
     }
 
     @Override
     public Collection<Bookmark> getBookmarksWithSearch(String s) {
-        throw new UnsupportedOperationException("not yet implemented.");
+        try {
+            if (null == s || s.isEmpty()) {
+                throw new IllegalArgumentException("empty search string");
+            }
+            return emf.createEntityManager()
+                    .createNamedQuery(BookmarkEntity.BOOKMARKS_WITH_TITLE, BookmarkEntity.class)
+                    .setParameter("s", '%' + s + '%')
+                    .getResultList()
+                    .stream()
+                    .map(this::bookmarkFromEntity)
+                    .collect(Collectors.toSet());
+        } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
+            LOG.error("db error on getting bookmarks with search string", e);
+            return Collections.emptySet();
+        }
     }
 
     @Override
@@ -248,7 +297,7 @@ public class H2Repository implements BookmarkRepository {
 // -------------------------- OTHER METHODS --------------------------
 
     /**
-     * converts a BokmarkEntity to a Bookmark
+     * converts a BookmarkEntity to a Bookmark
      *
      * @param entity
      *         the entity to convert

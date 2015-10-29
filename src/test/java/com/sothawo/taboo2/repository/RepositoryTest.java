@@ -135,10 +135,12 @@ public class RepositoryTest {
         bookmark2 = repository.createBookmark(bookmark2);
 
         repository.deleteBookmark(bookmark2.getId());
-        Collection<Bookmark> allBookmarks = repository.getAllBookmarks();
 
+        Collection<Bookmark> allBookmarks = repository.getAllBookmarks();
         assertThat(allBookmarks, hasSize(1));
         assertThat(allBookmarks, hasItems(bookmark1));
+
+        assertThat(repository.getAllTags(), hasSize(1));
     }
 
     @Test(expected = NotFoundException.class)

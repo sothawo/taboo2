@@ -30,14 +30,20 @@ import java.util.Set;
 @Entity
 @Table(name = "BOOKMARK")
 @NamedQueries({
-        @NamedQuery(name = BookmarkEntity.BOOKMARK_BY_URL, query = "select b from BookmarkEntity b where b.url = :url"),
-        @NamedQuery(name = BookmarkEntity.ALL_BOOKMARKS, query = "select b from BookmarkEntity b")
+        @NamedQuery(name = BookmarkEntity.BOOKMARK_BY_URL,
+                query = "select b from BookmarkEntity b where b.url = :url"),
+        @NamedQuery(name = BookmarkEntity.ALL_BOOKMARKS,
+                query = "select b from BookmarkEntity b"),
+        @NamedQuery(name = BookmarkEntity.BOOKMARKS_WITH_TITLE,
+                query = "select b from BookmarkEntity b where lower(b.title) like lower(:s)")
 })
 public class BookmarkEntity implements Serializable {
 // ------------------------------ FIELDS ------------------------------
 
     public final static String BOOKMARK_BY_URL = "BookmarkEntity.bookmarkByUrl";
     public final static String ALL_BOOKMARKS = "BookmarkEntity.allBookmarks";
+    public final static String BOOKMARKS_WITH_TITLE = "BookmarkEntity.bookmarksWithTitle";
+
     /** db id. */
     private Long id;
 
