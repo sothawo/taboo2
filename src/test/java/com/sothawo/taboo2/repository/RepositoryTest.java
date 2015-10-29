@@ -80,6 +80,12 @@ public class RepositoryTest {
     }
 
     @Test
+    public void initiallyEmpty() throws Exception {
+        assertThat(repository.getAllBookmarks(), hasSize(0));
+        assertThat(repository.getAllTags(), hasSize(0));
+    }
+
+    @Test
     public void createBookmark() throws Exception {
         Bookmark bookmarkIn = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build();
 
@@ -91,6 +97,9 @@ public class RepositoryTest {
         assertThat(bookmarkOut.getTitle(), is(bookmarkIn.getTitle()));
         assertThat(bookmarkOut.getTags().size(), is(1));
         assertThat(bookmarkOut.getTags().iterator().next(), is(bookmarkIn.getTags().iterator().next()));
+
+        assertThat(repository.getAllBookmarks(), hasSize(1));
+        assertThat(repository.getAllTags(), hasSize(1));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -135,7 +144,6 @@ public class RepositoryTest {
     @Test(expected = NotFoundException.class)
     public void deleteNotExistingBookmark() throws Exception {
         repository.deleteBookmark("42");
-
         fail("expected NotFoundException");
     }
 
@@ -148,6 +156,7 @@ public class RepositoryTest {
         repository.createBookmark(bookmark2);
 
         Collection<Bookmark> allBookmarks = repository.getAllBookmarks();
+        assertThat(allBookmarks, hasSize(2));
         assertThat(allBookmarks, hasItems(bookmark1, bookmark2));
     }
 
@@ -295,6 +304,9 @@ public class RepositoryTest {
         assertThat(bookmark.getTitle(), is("title1"));
         assertThat(bookmark.getTags(), hasSize(1));
         assertThat(bookmark.getTags(), hasItem("tag1"));
+
+        assertThat(repository.getAllBookmarks(), hasSize(1));
+        assertThat(repository.getAllTags(), hasSize(1));
     }
 
     @Test(expected = AlreadyExistsException.class)

@@ -80,6 +80,32 @@ public final class Bookmark {
 
 // ------------------------ CANONICAL METHODS ------------------------
 
+    /**
+     * creates a clone. for implementations that need to return Bookmark objects that might be changed by the caller.
+     *
+     * @return a clone of this Bookmark.
+     */
+    public Bookmark clone() {
+        Bookmark clone = new Bookmark();
+        clone.setId(id);
+        clone.setTitle(title);
+        clone.setUrl(url);
+        clone.tags.addAll(tags);
+        return clone;
+    }
+
+    /**
+     * sets the url.
+     *
+     * @param url
+     *         new url
+     * @throws NullPointerException
+     *         when url is null
+     */
+    public void setUrl(final String url) {
+        this.url = Objects.requireNonNull(url);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -127,17 +153,5 @@ public final class Bookmark {
      */
     public Collection<String> getTags() {
         return Collections.unmodifiableCollection(tags);
-    }
-
-    /**
-     * sets the url.
-     *
-     * @param url
-     *         new url
-     * @throws NullPointerException
-     *         when url is null
-     */
-    public void setUrl(final String url) {
-        this.url = Objects.requireNonNull(url);
     }
 }

@@ -60,7 +60,7 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
         }
 
         bookmark.setId(String.valueOf(nextId.getAndIncrement()));
-        bookmarks.put(bookmark.getUrl(), bookmark);
+        bookmarks.put(bookmark.getUrl(), bookmark.clone());
         return bookmark;
     }
 
@@ -74,7 +74,9 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
      */
     @Override
     public void deleteBookmark(String id) {
-        bookmarks.remove(getBookmarkById(id).getUrl());
+        Bookmark bookmark = getBookmarkById(id);
+        String url = bookmark.getUrl();
+        bookmarks.remove(url);
     }
 
     @Override

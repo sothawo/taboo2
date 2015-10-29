@@ -58,4 +58,18 @@ public class BookmarkTest {
         assertThat(tags, hasSize(1));
         assertThat(tags, hasItem("abc"));
     }
+
+    @Test
+    public void cloneTest() throws Exception {
+        Bookmark bookmark =
+                aBookmark().withId("1").withUrl("url1").withTitle("title1").addTag("tag1").addTag("tag2").build();
+        Bookmark clone = bookmark.clone();
+
+        assertThat(bookmark, not(sameInstance(clone)));
+        assertThat(bookmark.getId(), equalTo(clone.getId()));
+        assertThat(bookmark.getTitle(), equalTo(clone.getTitle()));
+        assertThat(bookmark.getUrl(), equalTo(clone.getUrl()));
+        assertThat(bookmark.getTags().size(), equalTo(clone.getTags().size()));
+        assertThat(bookmark.getTags(), hasItems(clone.getTags().toArray(new String[]{})));
+    }
 }
