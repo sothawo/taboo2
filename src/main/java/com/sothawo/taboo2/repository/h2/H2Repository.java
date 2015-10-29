@@ -9,24 +9,29 @@ import com.sothawo.taboo2.AlreadyExistsException;
 import com.sothawo.taboo2.Bookmark;
 import com.sothawo.taboo2.repository.BookmarkRepository;
 import com.sothawo.taboo2.repository.BookmarkRepositoryFactory;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.util.BEncoderStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolver;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.sothawo.taboo2.BookmarkBuilder.aBookmark;
 
@@ -110,8 +115,6 @@ public class H2Repository implements BookmarkRepository {
             throw new IllegalArgumentException();
         }
 
-        // search existing
-
         try {
             EntityManager em = emf.createEntityManager();
 
@@ -126,30 +129,41 @@ public class H2Repository implements BookmarkRepository {
             // insert new bookmark
             EntityTransaction tx = em.getTransaction();
 
-            BookmarkEntity entity = new BookmarkEntity();
-            entity.setUrl(bookmark.getUrl());
-            entity.setTitle(bookmark.getTitle());
+            BookmarkEntity bookmarkEntity = new BookmarkEntity();
+            bookmarkEntity.setUrl(bookmark.getUrl());
+            bookmarkEntity.setTitle(bookmark.getTitle());
 
             tx.begin();
 
-            em.persist(entity);
+            // build the TagEntities
+            TypedQuery<TagEntity> findTagQuery =
+                    em.createNamedQuery(TagEntity.FIND_BY_TAG, TagEntity.class);
+            for (String tag : bookmark.getTags()) {
+                TagEntity tagEntity;
+                try {
+                    tagEntity = findTagQuery.setParameter("tag", tag).getSingleResult();
+                } catch (NoResultException ignored) {
+                    tagEntity = new TagEntity();
+                    tagEntity.setTag(tag);
+                }
+                bookmarkEntity.addTag(tagEntity);
+                if (null == tagEntity.getId()) {
+                    em.persist(tagEntity);
+                }
+            }
+
+            em.persist(bookmarkEntity);
             em.flush();
 
 
             tx.commit();
             em.close();
 
-            Bookmark createdBookmark = aBookmark()
-                    .withId(String.valueOf(entity.getId()))
-                    .withUrl(entity.getUrl())
-                    .withTitle(entity.getTitle())
-                    .build();
-            return createdBookmark;
+            return bookmarkFromEntity(bookmarkEntity);
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on creating bookmark", e);
             return null;
         }
-
     }
 
     @Override
@@ -159,12 +173,34 @@ public class H2Repository implements BookmarkRepository {
 
     @Override
     public Collection<Bookmark> getAllBookmarks() {
-        throw new UnsupportedOperationException("not yet implemented.");
+        try {
+            return emf
+                    .createEntityManager()
+                    .createNamedQuery(BookmarkEntity.ALL_BOOKMARKS, BookmarkEntity.class)
+                    .getResultList()
+                    .stream()
+                    .map(this::bookmarkFromEntity)
+                    .collect(Collectors.toSet());
+        } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
+            LOG.error("db error on getting all bookmarks", e);
+            return Collections.emptySet();
+        }
     }
 
     @Override
     public Collection<String> getAllTags() {
-        throw new UnsupportedOperationException("not yet implemented.");
+        try {
+            return emf
+                    .createEntityManager()
+                    .createNamedQuery(TagEntity.ALL_TAGS, TagEntity.class)
+                    .getResultList()
+                    .stream()
+                    .map(TagEntity::getTag)
+                    .collect(Collectors.toSet());
+        } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
+            LOG.error("db error on getting all tags", e);
+            return Collections.emptySet();
+        }
     }
 
     @Override
@@ -207,6 +243,27 @@ public class H2Repository implements BookmarkRepository {
     @Override
     public void updateBookmark(Bookmark bookmark) {
         throw new UnsupportedOperationException("not yet implemented.");
+    }
+
+// -------------------------- OTHER METHODS --------------------------
+
+    /**
+     * converts a BokmarkEntity to a Bookmark
+     *
+     * @param entity
+     *         the entity to convert
+     * @return the converted Bookmark
+     */
+    private Bookmark bookmarkFromEntity(BookmarkEntity entity) {
+        Bookmark createdBookmark = aBookmark()
+                .withId(String.valueOf(entity.getId()))
+                .withUrl(entity.getUrl())
+                .withTitle(entity.getTitle())
+                .build();
+        for (TagEntity tagEntity : entity.getTags()) {
+            createdBookmark.addTag(tagEntity.getTag());
+        }
+        return createdBookmark;
     }
 
 // -------------------------- INNER CLASSES --------------------------

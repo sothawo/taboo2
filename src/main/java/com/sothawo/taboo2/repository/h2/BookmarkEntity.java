@@ -29,15 +29,15 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "BOOKMARK")
-@NamedQueries(
-        @NamedQuery(name = BookmarkEntity.BOOKMARK_BY_URL, query = "select b from BookmarkEntity b where b.url = :url")
-)
+@NamedQueries({
+        @NamedQuery(name = BookmarkEntity.BOOKMARK_BY_URL, query = "select b from BookmarkEntity b where b.url = :url"),
+        @NamedQuery(name = BookmarkEntity.ALL_BOOKMARKS, query = "select b from BookmarkEntity b")
+})
 public class BookmarkEntity implements Serializable {
-
-    public final static String BOOKMARK_BY_URL = "BookmarkEntity.bookmarkByUrl";
-
 // ------------------------------ FIELDS ------------------------------
 
+    public final static String BOOKMARK_BY_URL = "BookmarkEntity.bookmarkByUrl";
+    public final static String ALL_BOOKMARKS = "BookmarkEntity.allBookmarks";
     /** db id. */
     private Long id;
 

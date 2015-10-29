@@ -11,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -24,8 +26,15 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "TAG")
+@NamedQueries({
+        @NamedQuery(name = TagEntity.FIND_BY_TAG, query = "select t from TagEntity t where t.tag = :tag"),
+        @NamedQuery(name = TagEntity.ALL_TAGS, query = "select t from TagEntity t")
+})
 public class TagEntity implements Serializable {
 // ------------------------------ FIELDS ------------------------------
+
+    public static final String FIND_BY_TAG = "TagEntity.findByTag";
+    public static final String ALL_TAGS = "TagEntity.allTags";
 
     /** id of the entity. */
     private Long id;
