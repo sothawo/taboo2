@@ -9,7 +9,10 @@ import com.google.common.collect.Sets;
 import com.sothawo.taboo2.Bookmark;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -22,6 +25,37 @@ public abstract class AbstractBookmarkRepository implements BookmarkRepository {
 
 
 // --------------------- Interface BookmarkRepository ---------------------
+
+    /**
+     * basic implementation for the combination logic which relies on #getBookmarksWithTag(String) being implemented.
+     *
+     * @param tags
+     *         the tags to be searched
+     * @param opAnd
+     *         if true, the tags are to be combined using AND, otherwise OR
+     * @return
+     */
+    @Override
+    public Collection<Bookmark> getBookmarksWithTags(Collection<String> tags, boolean opAnd) {
+        Map<String, Set<Bookmark>> bookmarksForTag = new HashMap<>();
+        for (String tag : tags) {
+            bookmarksForTag.put(tag, getBookmarksWithTag(tag));
+        }
+
+        Set<Bookmark> foundBookmarks = null;
+        for (Set<Bookmark> bookmarkSet : bookmarksForTag.values()) {
+            if (null == foundBookmarks) {
+                foundBookmarks = bookmarkSet;
+            } else {
+                if (opAnd) {
+                    foundBookmarks = Sets.intersection(foundBookmarks, bookmarkSet);
+                } else {
+                    foundBookmarks = Sets.union(foundBookmarks, bookmarkSet);
+                }
+            }
+        }
+        return foundBookmarks;
+    }
 
     /**
      * basic implementation that calls both methods {@link BookmarkRepository#getBookmarksWithTags(Collection, boolean)}
@@ -41,5 +75,19 @@ public abstract class AbstractBookmarkRepository implements BookmarkRepository {
             Set<Bookmark> bookmarksWithString = new HashSet<>(getBookmarksWithSearch(s));
             return Sets.intersection(bookmarksWithTags, bookmarksWithString);
         }
+    }
+
+// -------------------------- OTHER METHODS --------------------------
+
+    /**
+     * get all bookmakrs that have a given tag. basic implementation returning an empty set. Used by
+     * #getBookmarksWithTags.
+     *
+     * @param tag
+     *         the tag to search for
+     * @return set of bookmarks, may be empty but not null
+     */
+    protected Set<Bookmark> getBookmarksWithTag(String tag) {
+        return Collections.emptySet();
     }
 }

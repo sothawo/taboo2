@@ -115,28 +115,19 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Collection<Bookmark> getBookmarksWithTags(Collection<String> tags, boolean opAnd) {
-        Map<String, Set<Bookmark>> bookmarksForTag = new HashMap<>();
-        for (String tag : tags) {
-            bookmarksForTag.put(tag, new HashSet<>());
-            bookmarks.values().stream()
-                    .filter(bookmark -> bookmark.getTags().contains(tag))
-                    .forEach(bookmark -> bookmarksForTag.get(tag).add(bookmark));
-        }
-
-        Set<Bookmark> foundBookmarks = null;
-        for (Set<Bookmark> bookmarkSet : bookmarksForTag.values()) {
-            if (null == foundBookmarks) {
-                foundBookmarks = bookmarkSet;
-            } else {
-                if (opAnd) {
-                    foundBookmarks = Sets.intersection(foundBookmarks, bookmarkSet);
-                } else {
-                    foundBookmarks = Sets.union(foundBookmarks, bookmarkSet);
-                }
-            }
-        }
+    /**
+     * get all the bookmarks that have a given tag.
+     *
+     * @param tag
+     *         the tag
+     * @return a Set of Bookmarks, may be empty not null
+     */
+    protected Set<Bookmark> getBookmarksWithTag(String tag) {
+        final Set<Bookmark> foundBookmarks = new HashSet<>();
+        bookmarks.values()
+                .stream()
+                .filter(bookmark -> bookmark.getTags().contains(tag))
+                .forEach(foundBookmarks::add);
         return foundBookmarks;
     }
 
