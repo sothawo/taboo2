@@ -134,12 +134,12 @@ public class H2Repository extends AbstractBookmarkRepository {
 
             // insert new bookmark
             EntityTransaction tx = em.getTransaction();
+            tx.begin();
 
             BookmarkEntity bookmarkEntity = new BookmarkEntity();
             bookmarkEntity.setUrl(bookmark.getUrl());
             bookmarkEntity.setTitle(bookmark.getTitle());
 
-            tx.begin();
 
             // build the TagEntities
             TypedQuery<TagEntity> findTagQuery =
@@ -206,13 +206,16 @@ public class H2Repository extends AbstractBookmarkRepository {
     @Override
     public Collection<Bookmark> getAllBookmarks() {
         try {
-            return emf
-                    .createEntityManager()
+            EntityManager em = emf.createEntityManager();
+            Set<Bookmark> bookmarks = em
                     .createNamedQuery(BookmarkEntity.ALL_BOOKMARKS, BookmarkEntity.class)
                     .getResultList()
                     .stream()
                     .map(this::bookmarkFromEntity)
                     .collect(Collectors.toSet());
+
+            em.close();
+            return bookmarks;
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on getting all bookmarks", e);
             return Collections.emptySet();
@@ -222,13 +225,16 @@ public class H2Repository extends AbstractBookmarkRepository {
     @Override
     public Collection<String> getAllTags() {
         try {
-            return emf
-                    .createEntityManager()
+            EntityManager em = emf
+                    .createEntityManager();
+            Set<String> tags = em
                     .createNamedQuery(TagEntity.ALL_TAGS, TagEntity.class)
                     .getResultList()
                     .stream()
                     .map(TagEntity::getTag)
                     .collect(Collectors.toSet());
+            em.close();
+            return tags;
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on getting all tags", e);
             return Collections.emptySet();
@@ -238,11 +244,12 @@ public class H2Repository extends AbstractBookmarkRepository {
     @Override
     public Bookmark getBookmarkById(String id) {
         try {
-            return Optional.ofNullable(
-                    emf.createEntityManager()
-                            .find(BookmarkEntity.class, Long.valueOf(id)))
-                    .map(this::bookmarkFromEntity)
-                    .orElseThrow(() -> new NotFoundException("no bookmark with id " + id));
+            EntityManager em = emf.createEntityManager();
+            Optional<Bookmark> bookmarkOptional =
+                    Optional.ofNullable(em.find(BookmarkEntity.class, Long.valueOf(id)))
+                            .map(this::bookmarkFromEntity);
+            em.close();
+            return bookmarkOptional.orElseThrow(() -> new NotFoundException("no bookmark with id " + id));
         } catch (Exception e) {
             throw new NotFoundException("no bookmark with id " + id, e);
         }
@@ -254,13 +261,16 @@ public class H2Repository extends AbstractBookmarkRepository {
             if (null == s || s.isEmpty()) {
                 throw new IllegalArgumentException("empty search string");
             }
-            return emf.createEntityManager()
+            EntityManager em = emf.createEntityManager();
+            Set<Bookmark> bookmarks = em
                     .createNamedQuery(BookmarkEntity.BOOKMARKS_WITH_TITLE, BookmarkEntity.class)
                     .setParameter("s", '%' + s + '%')
                     .getResultList()
                     .stream()
                     .map(this::bookmarkFromEntity)
                     .collect(Collectors.toSet());
+            em.close();
+            return bookmarks;
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on getting bookmarks with search string", e);
             return Collections.emptySet();
@@ -299,6 +309,8 @@ public class H2Repository extends AbstractBookmarkRepository {
 
         try {
             EntityManager em = emf.createEntityManager();
+            EntityTransaction tx = em.getTransaction();
+            tx.begin();
 
             // check if new URL exists on different entity
             try {
@@ -307,6 +319,7 @@ public class H2Repository extends AbstractBookmarkRepository {
                                 .setParameter("url", bookmark.getUrl())
                                 .getSingleResult();
                 if (!existingBookmarkEntity.getId().equals(updateBookmarkId)) {
+                    tx.rollback();
                     throw new AlreadyExistsException(MessageFormat.format("new url {0} already bookmarked",
                             bookmark.getUrl()));
                 }
@@ -318,9 +331,6 @@ public class H2Repository extends AbstractBookmarkRepository {
             if (null == bookmarkEntity) {
                 throw new NotFoundException("no bookmark with id " + updateBookmarkId);
             }
-            EntityTransaction tx = em.getTransaction();
-            tx.begin();
-
             bookmarkEntity.setUrl(bookmark.getUrl());
             bookmarkEntity.setTitle(bookmark.getTitle());
 
@@ -391,17 +401,18 @@ public class H2Repository extends AbstractBookmarkRepository {
     @Override
     protected Set<Bookmark> getBookmarksWithTag(String tag) {
         Set<Bookmark> bookmarks = new HashSet<>();
+        EntityManager em = emf.createEntityManager();
         try {
-            emf.createEntityManager()
-                    .createNamedQuery(TagEntity.FIND_BY_TAG, TagEntity.class)
+            em.createNamedQuery(TagEntity.FIND_BY_TAG, TagEntity.class)
                     .setParameter("tag", tag)
                     .getSingleResult()
                     .getBookmarks()
                     .stream()
                     .map(this::bookmarkFromEntity)
                     .forEach(bookmarks::add);
+            em.close();
         } catch (NoResultException ignored) {
-            // ignore
+            em.close();
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on getting tag", e);
         }
