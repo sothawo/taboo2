@@ -5,7 +5,7 @@
 
 	<groupId>com.sothawo</groupId>
 	<artifactId>taboo2</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>taboo2</name>
@@ -180,9 +180,14 @@
             <artifactId>jsoup</artifactId>
         </dependency>
 
+        <!-- database -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mattbertolini</groupId>
+            <artifactId>liquibase-slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.liquibase</groupId>

@@ -15,6 +15,7 @@
 */
 package com.sothawo.taboo2.repository;
 
+import com.sothawo.taboo2.repository.h2.DBManager;
 import com.sothawo.taboo2.repository.h2.H2Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -53,10 +54,12 @@ public class BookmarkRepositoryConfig {
      * @return H2 Bookmark Repository
      */
     @SuppressWarnings("SameReturnValue")
-    @Bean(name = "h1BookmarkRepository")
+    @Bean(name = "h2BookmarkRepository")
     @Profile("repo-h2")
     public BookmarkRepository h2BookmarkRepository() {
-        return new H2Repository(env.getProperty("h2.jdbcUrl", "undefined property h2.jdbcurl"));
+        String jdbcUrl = env.getProperty("h2.jdbcUrl", "undefined property h2.jdbcurl");
+        DBManager.updateDB(jdbcUrl, "db/db-changelog.xml");
+        return new H2Repository(jdbcUrl);
     }
 
     /**

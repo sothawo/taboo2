@@ -22,4 +22,16 @@ public class NotFoundException extends TabooException {
     public NotFoundException(final String message) {
         super(message);
     }
+
+    /**
+     * creates a NotFoundException with the given message and cause.
+     *
+     * @param message
+     *         the message
+     * @param cause
+     *         the cause
+     */
+    public NotFoundException(String message, Exception cause) {
+        super(message, cause);
+    }
 }

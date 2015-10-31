@@ -71,7 +71,6 @@ public class Taboo2ServiceTests {
     private final static String TABOO2_BOOKMARKS = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_BOOKMARKS;
     private final static String TABOO2_TAGS = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_TAGS;
     private final static String TABOO2_TITLE = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_TITLE;
-    private final static String TABOO2_CHECK = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_CHECK;
 
     /**
      * The service to test. Cannot be created with @Tested because we need internal spring DI resolution.
@@ -84,16 +83,6 @@ public class Taboo2ServiceTests {
     private BookmarkRepository repository;
 
 // -------------------------- OTHER METHODS --------------------------
-
-    @Test
-    public void checkRunning() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(taboo2Service).build();
-
-        mockMvc.perform(get(TABOO2_CHECK).
-                accept(MediaType.TEXT_PLAIN))
-                .andExpect(status().isOk())
-        ;
-    }
 
     private byte[] convertObjectToJsonBytes(Object o) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();

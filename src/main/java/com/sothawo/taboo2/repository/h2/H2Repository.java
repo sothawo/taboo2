@@ -8,6 +8,7 @@ package com.sothawo.taboo2.repository.h2;
 import com.sothawo.taboo2.AlreadyExistsException;
 import com.sothawo.taboo2.Bookmark;
 import com.sothawo.taboo2.NotFoundException;
+import com.sothawo.taboo2.repository.AbstractBookmarkRepository;
 import com.sothawo.taboo2.repository.BookmarkRepository;
 import com.sothawo.taboo2.repository.BookmarkRepositoryFactory;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,7 +43,7 @@ import static com.sothawo.taboo2.BookmarkBuilder.aBookmark;
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
-public class H2Repository implements BookmarkRepository {
+public class H2Repository extends AbstractBookmarkRepository {
 // ------------------------------ FIELDS ------------------------------
 
     /** name of the persistence unit. */
@@ -51,7 +53,7 @@ public class H2Repository implements BookmarkRepository {
     private final static Logger LOG = LoggerFactory.getLogger(H2Repository.class);
 
     /** Entity Manager Factory */
-    private final EntityManagerFactory emf;
+    private EntityManagerFactory emf;
 
 // -------------------------- STATIC METHODS --------------------------
 
@@ -100,7 +102,10 @@ public class H2Repository implements BookmarkRepository {
     public void close() {
         try {
             if (null != emf) {
-                emf.close();
+                if (emf.isOpen()) {
+                    emf.close();
+                }
+                emf = null;
             }
         } catch (RuntimeException e) {
             LOG.warn("DB", e);
@@ -233,14 +238,14 @@ public class H2Repository implements BookmarkRepository {
     @Override
     public Bookmark getBookmarkById(String id) {
         try {
-            return Optional.of(
-                    emf.createEntityManager().find(BookmarkEntity.class, Long.valueOf(id)))
+            return Optional.ofNullable(
+                    emf.createEntityManager()
+                            .find(BookmarkEntity.class, Long.valueOf(id)))
                     .map(this::bookmarkFromEntity)
                     .orElseThrow(() -> new NotFoundException("no bookmark with id " + id));
         } catch (Exception e) {
-            LOG.error("error on getting bookmark by id", e);
+            throw new NotFoundException("no bookmark with id " + id, e);
         }
-        throw new NotFoundException("no bookmark with id " + id);
     }
 
     @Override
@@ -263,16 +268,6 @@ public class H2Repository implements BookmarkRepository {
     }
 
     @Override
-    public Collection<Bookmark> getBookmarksWithTags(Collection<String> tags, boolean opAnd) {
-        throw new UnsupportedOperationException("not yet implemented.");
-    }
-
-    @Override
-    public Collection<Bookmark> getBookmarksWithTagsAndSearch(Collection<String> tags, boolean opAnd, String s) {
-        throw new UnsupportedOperationException("not yet implemented.");
-    }
-
-    @Override
     public void purge() {
         try {
             EntityManager em = emf.createEntityManager();
@@ -291,7 +286,85 @@ public class H2Repository implements BookmarkRepository {
 
     @Override
     public void updateBookmark(Bookmark bookmark) {
-        throw new UnsupportedOperationException("not yet implemented.");
+        if (null == bookmark.getId() || null == bookmark.getUrl() || bookmark.getUrl().isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        Long updateBookmarkId;
+        try {
+            updateBookmarkId = Long.valueOf(bookmark.getId());
+        } catch (NumberFormatException e) {
+            throw new NotFoundException("no bookmark with id " + bookmark.getId());
+        }
+
+        try {
+            EntityManager em = emf.createEntityManager();
+
+            // check if new URL exists on different entity
+            try {
+                BookmarkEntity existingBookmarkEntity =
+                        em.createNamedQuery(BookmarkEntity.BOOKMARK_BY_URL, BookmarkEntity.class)
+                                .setParameter("url", bookmark.getUrl())
+                                .getSingleResult();
+                if (!existingBookmarkEntity.getId().equals(updateBookmarkId)) {
+                    throw new AlreadyExistsException(MessageFormat.format("new url {0} already bookmarked",
+                            bookmark.getUrl()));
+                }
+            } catch (NoResultException ignored) {
+                // ignore
+            }
+
+            BookmarkEntity bookmarkEntity = em.find(BookmarkEntity.class, updateBookmarkId);
+            if (null == bookmarkEntity) {
+                throw new NotFoundException("no bookmark with id " + updateBookmarkId);
+            }
+            EntityTransaction tx = em.getTransaction();
+            tx.begin();
+
+            bookmarkEntity.setUrl(bookmark.getUrl());
+            bookmarkEntity.setTitle(bookmark.getTitle());
+
+            // keep the old tags
+            Set<TagEntity> previousTagEntities = new HashSet<>(bookmarkEntity.getTags());
+
+            // build the new TagEntities
+            TypedQuery<TagEntity> findTagQuery =
+                    em.createNamedQuery(TagEntity.FIND_BY_TAG, TagEntity.class);
+            for (String tag : bookmark.getTags()) {
+                TagEntity tagEntity;
+                try {
+                    tagEntity = findTagQuery.setParameter("tag", tag).getSingleResult();
+                } catch (NoResultException ignored) {
+                    // new tag
+                    tagEntity = new TagEntity();
+                    tagEntity.setTag(tag);
+                }
+                if (!bookmarkEntity.getTags().contains(tagEntity)) {
+                    bookmarkEntity.addTag(tagEntity);
+                }
+                if (null == tagEntity.getId()) {
+                    em.persist(tagEntity);
+                }
+            }
+
+            // check the old set for tags that are not contained anymore
+            previousTagEntities
+                    .stream()
+                    .filter(tagEntity -> !bookmark.getTags().contains(tagEntity.getTag()))
+                    .forEach(tagEntity -> {
+                        bookmarkEntity.removeTag(tagEntity);
+                        if (tagEntity.getBookmarks().isEmpty()) {
+                            em.remove(tagEntity);
+                        }
+                    });
+
+            em.merge(bookmarkEntity);
+
+            tx.commit();
+            em.close();
+        } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
+            LOG.error("db error on updating bookmark", e);
+        }
     }
 
 // -------------------------- OTHER METHODS --------------------------
@@ -313,6 +386,26 @@ public class H2Repository implements BookmarkRepository {
             createdBookmark.addTag(tagEntity.getTag());
         }
         return createdBookmark;
+    }
+
+    @Override
+    protected Set<Bookmark> getBookmarksWithTag(String tag) {
+        Set<Bookmark> bookmarks = new HashSet<>();
+        try {
+            emf.createEntityManager()
+                    .createNamedQuery(TagEntity.FIND_BY_TAG, TagEntity.class)
+                    .setParameter("tag", tag)
+                    .getSingleResult()
+                    .getBookmarks()
+                    .stream()
+                    .map(this::bookmarkFromEntity)
+                    .forEach(bookmarks::add);
+        } catch (NoResultException ignored) {
+            // ignore
+        } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
+            LOG.error("db error on getting tag", e);
+        }
+        return bookmarks;
     }
 
 // -------------------------- INNER CLASSES --------------------------

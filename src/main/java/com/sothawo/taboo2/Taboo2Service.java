@@ -96,8 +96,9 @@ public class Taboo2Service {
      * simple method that returns Status OK.
      */
     @RequestMapping(value = MAPPING_CHECK, method = RequestMethod.GET)
-    public final void check() {
+    public final ResponseEntity check() {
         LOG.info("check called");
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @PreDestroy

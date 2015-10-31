@@ -29,6 +29,15 @@ public final class Bookmark {
     /** the tags of the bookmark. */
     private final Collection<String> tags = new HashSet<>();
 
+    @Override
+    public String toString() {
+        return "Bookmark{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", url='" + url + '\'' +
+                ", tags=" + tags +
+                '}';
+    }
 // --------------------- GETTER / SETTER METHODS ---------------------
 
     /**

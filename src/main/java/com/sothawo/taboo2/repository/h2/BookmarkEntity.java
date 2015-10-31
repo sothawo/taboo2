@@ -118,10 +118,26 @@ public class BookmarkEntity implements Serializable {
      * add a tag and set up the entity connections.
      *
      * @param tagEntity
+     *         TagEntity to add
      */
     public void addTag(TagEntity tagEntity) {
-        tagEntity.getBookmarks().add(this);
-        getTags().add(tagEntity);
+        if (null != tagEntity) {
+            tagEntity.getBookmarks().add(this);
+            getTags().add(tagEntity);
+        }
+    }
+
+    /**
+     * remove a tag and set up the entity connections.
+     *
+     * @param tagEntity
+     *         TagEntity to remove
+     */
+    public void removeTag(TagEntity tagEntity) {
+        if (null != tagEntity) {
+            tagEntity.getBookmarks().remove(this);
+            getTags().remove(tagEntity);
+        }
     }
 
     public void setTags(Set<TagEntity> tags) {

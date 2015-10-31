@@ -17,6 +17,7 @@ package com.sothawo.taboo2;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -41,6 +42,13 @@ public class Taboo2Application {
     /** the taboo2 configuration. */
     @Autowired
     private Taboo2Configuration taboo2Configuration;
+
+    // initialize logging and install Bridge from JUL to SLF4J
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
+
 
 // -------------------------- OTHER METHODS --------------------------
 
