@@ -3,7 +3,7 @@
  *
  * http://www.sothawo.com
  */
-package com.sothawo.taboo2.repository.h2;
+package com.sothawo.taboo2.repository.jpa;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

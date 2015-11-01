@@ -15,8 +15,8 @@
 */
 package com.sothawo.taboo2.repository;
 
-import com.sothawo.taboo2.repository.h2.DBManager;
-import com.sothawo.taboo2.repository.h2.H2Repository;
+import com.sothawo.taboo2.repository.jpa.DBManager;
+import com.sothawo.taboo2.repository.jpa.H2Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

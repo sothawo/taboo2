@@ -3,7 +3,7 @@
  *
  * http://www.sothawo.com
  */
-package com.sothawo.taboo2.repository.h2;
+package com.sothawo.taboo2.repository.jpa;
 
 import com.sothawo.taboo2.AlreadyExistsException;
 import com.sothawo.taboo2.Bookmark;
@@ -14,8 +14,6 @@ import com.sothawo.taboo2.repository.BookmarkRepositoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
@@ -52,8 +50,8 @@ public class H2Repository extends AbstractBookmarkRepository {
     /** Logger. */
     private final static Logger LOG = LoggerFactory.getLogger(H2Repository.class);
 
-    /** Entity Manager Factory */
-    private EntityManagerFactory emf;
+    /** Entity Manager Factory, autocloseable variant */
+    private EntityManagerFactoryAutoCloseable emf;
 
 // -------------------------- STATIC METHODS --------------------------
 
@@ -90,7 +88,8 @@ public class H2Repository extends AbstractBookmarkRepository {
         LOG.info("configured jdbc url: {}", jdbcUrl);
         Map<String, String> props = new HashMap<>();
         props.put("hibernate.connection.url", jdbcUrl);
-        emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, props);
+        emf = EntityManagerFactoryAutoCloseable.createFor(Persistence.createEntityManagerFactory
+                (PERSISTENCE_UNIT_NAME, props));
     }
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -121,9 +120,7 @@ public class H2Repository extends AbstractBookmarkRepository {
             throw new IllegalArgumentException();
         }
 
-        try {
-            EntityManager em = emf.createEntityManager();
-
+        try (EntityManagerAutoCloseable em = (EntityManagerAutoCloseable) emf.createEntityManager()) {
             // search existing
             List resultList = em.createNamedQuery(BookmarkEntity.BOOKMARK_BY_URL).setParameter("url", bookmark.getUrl())
                     .getResultList();
@@ -162,7 +159,6 @@ public class H2Repository extends AbstractBookmarkRepository {
             em.flush();
 
             tx.commit();
-            em.close();
 
             return bookmarkFromEntity(bookmarkEntity);
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
@@ -173,9 +169,8 @@ public class H2Repository extends AbstractBookmarkRepository {
 
     @Override
     public void deleteBookmark(String id) {
-        try {
+        try (EntityManagerAutoCloseable em = (EntityManagerAutoCloseable) emf.createEntityManager()) {
             Long bookmarkId = Long.valueOf(id);
-            EntityManager em = emf.createEntityManager();
 
             EntityTransaction tx = em.getTransaction();
             tx.begin();
@@ -195,7 +190,6 @@ public class H2Repository extends AbstractBookmarkRepository {
             em.remove(bookmarkEntity);
 
             tx.commit();
-            em.close();
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("non numeric id");
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
@@ -205,8 +199,7 @@ public class H2Repository extends AbstractBookmarkRepository {
 
     @Override
     public Collection<Bookmark> getAllBookmarks() {
-        try {
-            EntityManager em = emf.createEntityManager();
+        try (EntityManagerAutoCloseable em = (EntityManagerAutoCloseable) emf.createEntityManager()) {
             Set<Bookmark> bookmarks = em
                     .createNamedQuery(BookmarkEntity.ALL_BOOKMARKS, BookmarkEntity.class)
                     .getResultList()
@@ -214,7 +207,6 @@ public class H2Repository extends AbstractBookmarkRepository {
                     .map(this::bookmarkFromEntity)
                     .collect(Collectors.toSet());
 
-            em.close();
             return bookmarks;
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on getting all bookmarks", e);
@@ -224,16 +216,13 @@ public class H2Repository extends AbstractBookmarkRepository {
 
     @Override
     public Collection<String> getAllTags() {
-        try {
-            EntityManager em = emf
-                    .createEntityManager();
+        try (EntityManagerAutoCloseable em = (EntityManagerAutoCloseable) emf.createEntityManager()) {
             Set<String> tags = em
                     .createNamedQuery(TagEntity.ALL_TAGS, TagEntity.class)
                     .getResultList()
                     .stream()
                     .map(TagEntity::getTag)
                     .collect(Collectors.toSet());
-            em.close();
             return tags;
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on getting all tags", e);
@@ -243,12 +232,10 @@ public class H2Repository extends AbstractBookmarkRepository {
 
     @Override
     public Bookmark getBookmarkById(String id) {
-        try {
-            EntityManager em = emf.createEntityManager();
+        try (EntityManagerAutoCloseable em = (EntityManagerAutoCloseable) emf.createEntityManager()) {
             Optional<Bookmark> bookmarkOptional =
                     Optional.ofNullable(em.find(BookmarkEntity.class, Long.valueOf(id)))
                             .map(this::bookmarkFromEntity);
-            em.close();
             return bookmarkOptional.orElseThrow(() -> new NotFoundException("no bookmark with id " + id));
         } catch (Exception e) {
             throw new NotFoundException("no bookmark with id " + id, e);
@@ -257,11 +244,10 @@ public class H2Repository extends AbstractBookmarkRepository {
 
     @Override
     public Collection<Bookmark> getBookmarksWithSearch(String s) {
-        try {
+        try (EntityManagerAutoCloseable em = (EntityManagerAutoCloseable) emf.createEntityManager()) {
             if (null == s || s.isEmpty()) {
                 throw new IllegalArgumentException("empty search string");
             }
-            EntityManager em = emf.createEntityManager();
             Set<Bookmark> bookmarks = em
                     .createNamedQuery(BookmarkEntity.BOOKMARKS_WITH_TITLE, BookmarkEntity.class)
                     .setParameter("s", '%' + s + '%')
@@ -269,7 +255,6 @@ public class H2Repository extends AbstractBookmarkRepository {
                     .stream()
                     .map(this::bookmarkFromEntity)
                     .collect(Collectors.toSet());
-            em.close();
             return bookmarks;
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on getting bookmarks with search string", e);
@@ -279,8 +264,7 @@ public class H2Repository extends AbstractBookmarkRepository {
 
     @Override
     public void purge() {
-        try {
-            EntityManager em = emf.createEntityManager();
+        try (EntityManagerAutoCloseable em = (EntityManagerAutoCloseable) emf.createEntityManager()) {
             EntityTransaction tx = em.getTransaction();
             tx.begin();
 
@@ -288,7 +272,6 @@ public class H2Repository extends AbstractBookmarkRepository {
             em.createQuery("delete from TagEntity t").executeUpdate();
 
             tx.commit();
-            em.close();
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on purging data", e);
         }
@@ -307,8 +290,7 @@ public class H2Repository extends AbstractBookmarkRepository {
             throw new NotFoundException("no bookmark with id " + bookmark.getId());
         }
 
-        try {
-            EntityManager em = emf.createEntityManager();
+        try (EntityManagerAutoCloseable em = (EntityManagerAutoCloseable) emf.createEntityManager()) {
             EntityTransaction tx = em.getTransaction();
             tx.begin();
 
@@ -371,7 +353,6 @@ public class H2Repository extends AbstractBookmarkRepository {
             em.merge(bookmarkEntity);
 
             tx.commit();
-            em.close();
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on updating bookmark", e);
         }
@@ -401,8 +382,7 @@ public class H2Repository extends AbstractBookmarkRepository {
     @Override
     protected Set<Bookmark> getBookmarksWithTag(String tag) {
         Set<Bookmark> bookmarks = new HashSet<>();
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManagerAutoCloseable em = (EntityManagerAutoCloseable) emf.createEntityManager()) {
             em.createNamedQuery(TagEntity.FIND_BY_TAG, TagEntity.class)
                     .setParameter("tag", tag)
                     .getSingleResult()
@@ -410,9 +390,8 @@ public class H2Repository extends AbstractBookmarkRepository {
                     .stream()
                     .map(this::bookmarkFromEntity)
                     .forEach(bookmarks::add);
-            em.close();
         } catch (NoResultException ignored) {
-            em.close();
+            // ignore
         } catch (IllegalStateException | IllegalArgumentException | PersistenceException e) {
             LOG.error("db error on getting tag", e);
         }
