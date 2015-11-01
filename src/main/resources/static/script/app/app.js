@@ -323,7 +323,10 @@ function TabooVM($http, $base64, $location, tabooService) {
         this.loadTitle();
     }
 
-
+    // when already authenticated
+    if(this.authenticated == 'success'){
+        this.clearSelection();
+    }
 }
 
 
