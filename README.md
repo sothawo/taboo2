@@ -28,6 +28,17 @@ The hashedPassword can be created with the _main_ method of the Taboo2UserServic
 
 ## Versions
 
-### 0.1.0
+### 0.3.0
 
-The first version with the basic functionality and an inmemory repository.
+version to be run on OpenShift with H2 backend
+
+## Bookmarklet
+
+The following bookmarklet loads the app and passes the url of the current page (set HOST andf PORT to where the 
+application is installed):
+
+javascript: (function() {
+    var newLocation='http://HOST:PORT/#!?newBookmarkUrl=' + encodeURIComponent(document.location.href);
+    open(newLocation).focus();
+})();
+

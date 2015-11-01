@@ -34,13 +34,13 @@ app.constant('tabooService', {
 });
 
 // create Controller that creates a ViewModel
-app.controller('TabooCtrl', function ($scope, $http, $base64, tabooService) {
-    $scope.vm = new TabooVM($http, $base64, tabooService);
+app.controller('TabooCtrl', function ($scope, $http, $base64, $location, tabooService) {
+    $scope.vm = new TabooVM($http, $base64, $location, tabooService);
 });
 
 
 // ViewModel
-function TabooVM($http, $base64, tabooService) {
+function TabooVM($http, $base64, $location, tabooService) {
     var self = this;
     /** entry for new bookmark's url. */
     this.newBookmarkUrl = '';
@@ -65,10 +65,17 @@ function TabooVM($http, $base64, tabooService) {
     /** the authentication state ('success', any other value is not authenticated */
     this.authenticated = '';
 
+    // check if there is already an authentication header in the localstore
+    if(localStorage) {
+        var authHeader = localStorage.getItem('taboo2AuthHeader');
+        if(authHeader) {
+            $http.defaults.headers.common['Authorization'] = authHeader;
+            self.authenticated = 'success';
 
+        }
+    }
     /** flag wether new bookmark panel content is visible. */
     this.newBookmarkVisible = false;
-
 
     /**
      * calls the backend with the given credential. whenn succesful, stores the auth header an sets the
@@ -81,6 +88,9 @@ function TabooVM($http, $base64, tabooService) {
             .get(tabooService.urlService + tabooService.pathCheck, {headers: headers})
             .then(
                 function (response) {
+                    if(localStorage) {
+                        localStorage.setItem('taboo2AuthHeader', authHeader);
+                    }
                     $http.defaults.headers.common['Authorization'] = authHeader;
                     self.authenticated = 'success';
                     self.clearSelection();
@@ -95,6 +105,10 @@ function TabooVM($http, $base64, tabooService) {
      * reset the login information.
      */
     this.logout = function() {
+        delete $http.defaults.headers.common['Authorization'];
+        if(localStorage) {
+            localStorage.removeItem('taboo2AuthHeader');
+        }
         this.authenticated = '';
         this.username = '';
         this.password = '';
@@ -300,6 +314,16 @@ function TabooVM($http, $base64, tabooService) {
             self.editBookmarkId = bookmark.id;
         }
     };
+
+    // check for search arguments
+    var searchObject = $location.search();
+    if(searchObject && searchObject.newBookmarkUrl) {
+        this.newBookmarkUrl = searchObject.newBookmarkUrl;
+        this.newBookmarkVisible = true;
+        this.loadTitle();
+    }
+
+
 }
 
 
