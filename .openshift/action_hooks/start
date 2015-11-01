@@ -15,4 +15,4 @@ java -version
 echo "############################################"
 
 cd $OPENSHIFT_REPO_DIR
-nohup java -jar taboo2-*.jar --spring.profiles.active=openshift,repo-inmemory &
+nohup java -jar taboo2-*.jar --spring.profiles.active=openshift,repo-h2 &

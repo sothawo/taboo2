@@ -63,7 +63,7 @@ public class BookmarkRepositoryConfig {
     }
 
     /**
-     * null implementation, used when the repo-mocked profile is active, becaus then in the tests a mocked repo is
+     * null implementation, used when the repo-mocked profile is active, because then in the tests a mocked repo is
      * injected.
      *
      * @return null
