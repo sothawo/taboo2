@@ -70,7 +70,7 @@ function TabooVM($http, $base64, $location, tabooService) {
         var authHeader = localStorage.getItem('taboo2AuthHeader');
         if(authHeader) {
             $http.defaults.headers.common['Authorization'] = authHeader;
-            self.authenticated = 'success';
+            this.authenticated = 'success';
 
         }
     }
@@ -109,16 +109,16 @@ function TabooVM($http, $base64, $location, tabooService) {
         if(localStorage) {
             localStorage.removeItem('taboo2AuthHeader');
         }
-        this.authenticated = '';
-        this.username = '';
-        this.password = '';
+        self.authenticated = '';
+        self.username = '';
+        self.password = '';
     }
 
     /**
      * toggles that flag that determines the visibility of the new bookmark entry.
      */
     this.toggleNewBookmarkVisibility = function() {
-        this.newBookmarkVisible = !this.newBookmarkVisible;
+        self.newBookmarkVisible = !self.newBookmarkVisible;
     }
 
     /**
@@ -148,7 +148,7 @@ function TabooVM($http, $base64, $location, tabooService) {
      * sets the bookmarks to show and updates the tag sets.
      * @param bookmarks
      */
-    self.setBookmarksToShow = function (bookmarks) {
+    this.setBookmarksToShow = function (bookmarks) {
         self.bookmarks = bookmarks;
         // collect the tags from the bookmarks
         var tags = new TabooSet();
@@ -311,7 +311,7 @@ function TabooVM($http, $base64, $location, tabooService) {
             self.newBookmarkTitle = bookmark.title;
             self.newBookmarkTags = bookmark.joinedTags();
             self.editBookmarkId = bookmark.id;
-            this.newBookmarkVisible = true;
+            self.newBookmarkVisible = true;
         }
     };
 
