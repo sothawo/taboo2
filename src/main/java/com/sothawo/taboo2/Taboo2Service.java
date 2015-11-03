@@ -169,7 +169,7 @@ public class Taboo2Service {
     @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public final String exceptionHandlerAlreadyExistsException(final AlreadyExistsException e) {
-        return e.getMessage();
+        return '"' + e.getMessage() + '"';
     }
 
     /**
@@ -183,7 +183,7 @@ public class Taboo2Service {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
     public final String exceptionHandlerIllegalArgumentException(final IllegalArgumentException e) {
-        return e.getMessage();
+        return '"' + e.getMessage() + '"';
     }
 
     /**
@@ -197,7 +197,7 @@ public class Taboo2Service {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public final String exceptionHandlerNotFoundException(final NotFoundException e) {
-        return e.getMessage();
+        return '"' + e.getMessage() + '"';
     }
 
     /**

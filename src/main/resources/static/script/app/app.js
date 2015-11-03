@@ -96,7 +96,7 @@ function TabooVM($http, $base64, $location, tabooService) {
                     self.clearSelection();
                 },
                 function (response) {
-                    alert('Error: ' + response.status + ' ' + response.statusText);
+                    alert('Error: ' + response.status + ' ' + response.statusText + ' (' + response.data + ')');
                 }
             );
     }
@@ -134,7 +134,7 @@ function TabooVM($http, $base64, $location, tabooService) {
      * @param tags the new selected tags.
      */
     this.setSelectedTags = function (tags) {
-        if (tags.isSetObject) {
+        if (tags && tags.isSetObject) {
             self.selectedTags = tags;
         } else if (angular.isArray(tags)) {
             self.selectedTags = new TabooSet(tags);
@@ -192,7 +192,7 @@ function TabooVM($http, $base64, $location, tabooService) {
                     }
                     self.setBookmarksToShow(bookmarks);
                 }).catch(function (result) {
-                alert('Error: ' + result.status + ' ' + result.statusText);
+                alert('Error: ' + result.status + ' ' + result.statusText + ' (' + result.data + ')');
             });
         } else {
             // only get the tags
@@ -201,7 +201,7 @@ function TabooVM($http, $base64, $location, tabooService) {
                     self.setBookmarksToShow([]);
                     self.availableTags = new TabooSet(result.data);
                 }).catch(function (result) {
-                alert('Error: ' + result.status + ' ' + result.statusText);
+                alert('Error: ' + result.status + ' ' + result.statusText + ' (' + result.data + ')');
             });
         }
     };
@@ -234,7 +234,7 @@ function TabooVM($http, $base64, $location, tabooService) {
                     self.newBookmarkUrl = result.data.url;
                     self.newBookmarkTitle = result.data.title;
                 }).catch(function (result) {
-                alert('Error: ' + result.status + ' ' + result.statusText);
+                alert('Error: ' + result.status + ' ' + result.statusText + ' (' + result.data + ')');
             });
         }
     };
@@ -258,10 +258,9 @@ function TabooVM($http, $base64, $location, tabooService) {
                 bookmark.id = self.editBookmarkId;
                 $http.put(tabooService.urlService + tabooService.pathBookmarks, bookmark)
                     .then(function (result) {
-                        var createdBookmark = result.data;
-                        self.setSelectedTags(createdBookmark.tags);
+                        self.setSelectedTags(bookmark.tags);
                     }).catch(function (result) {
-                    alert('Error: ' + result.status + ' ' + result.statusText);
+                    alert('Error: ' + result.status + ' ' + result.statusText + ' (' + result.data + ')');
                 });
             } else {
                 $http.post(tabooService.urlService + tabooService.pathBookmarks, bookmark)
@@ -269,7 +268,7 @@ function TabooVM($http, $base64, $location, tabooService) {
                         var createdBookmark = result.data;
                         self.setSelectedTags(createdBookmark.tags);
                     }).catch(function (result) {
-                    alert('Error: ' + result.status + ' ' + result.statusText);
+                    alert('Error: ' + result.status + ' ' + result.statusText + ' (' + result.data + ')');
                 });
             }
         }
@@ -297,7 +296,7 @@ function TabooVM($http, $base64, $location, tabooService) {
                     self.reloadBookmarks();
                 })
                 .catch(function (result) {
-                    alert('Error: ' + result.status + ' ' + result.statusText);
+                    alert('Error: ' + result.status + ' ' + result.statusText + ' (' + result.data + ')');
                 });
         }
     };
@@ -312,6 +311,7 @@ function TabooVM($http, $base64, $location, tabooService) {
             self.newBookmarkTitle = bookmark.title;
             self.newBookmarkTags = bookmark.joinedTags();
             self.editBookmarkId = bookmark.id;
+            this.newBookmarkVisible = true;
         }
     };
 

@@ -125,7 +125,7 @@ public class H2Repository extends AbstractBookmarkRepository {
             List resultList = em.createNamedQuery(BookmarkEntity.BOOKMARK_BY_URL).setParameter("url", bookmark.getUrl())
                     .getResultList();
             if (resultList.size() > 0) {
-                throw new AlreadyExistsException(MessageFormat.format("bookmark with url '{0}' already exists.",
+                throw new AlreadyExistsException(MessageFormat.format("bookmark with url {0} already exists.",
                         bookmark.getUrl()));
             }
 
