@@ -82,6 +82,12 @@ public class Taboo2Service {
     /** AND operation. */
     private static final String OP_AND = "and";
 
+    /** user agent that jsoup sends when fetching the page title. Some sites send 403, when no known user agent is
+     * sent).
+     */
+    private static final String JSOUP_USER_AGENT =
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36";
+
     /** configuration object. */
     @Autowired
     private Taboo2Configuration taboo2Config;
@@ -279,7 +285,12 @@ public class Taboo2Service {
             final String finalUrl = urlString;
             LOG.debug("loading title for url {}", finalUrl);
             try {
-                String htmlTitle = Jsoup.connect(finalUrl).timeout(5000).get().title();
+                String htmlTitle = Jsoup
+                        .connect(finalUrl)
+                        .timeout(5000)
+                        .userAgent(JSOUP_USER_AGENT)
+                        .get()
+                        .title();
                 LOG.debug("got title: {}", htmlTitle);
                 return new ResponseEntity<>(aBookmark().withUrl(finalUrl).withTitle(htmlTitle).build(), HttpStatus.OK);
             } catch (HttpStatusException e) {
