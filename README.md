@@ -38,7 +38,7 @@ The following bookmarklet loads the app and passes the url of the current page (
 application is installed):
 
 javascript: (function() {
-    var newLocation='http://HOST:PORT/#!?newBookmarkUrl=' + encodeURIComponent(document.location.href);
-    open(newLocation).focus();
+    var newLocation='http://HOST:PORT/#!?newBookmarkUrl='+encodeURIComponent(document.location.href);
+    open(newLocation,'taboo2').focus();
 })();
 
