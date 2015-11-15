@@ -240,7 +240,7 @@ function TabooVM($http, $base64, $location, tabooService) {
     };
 
     /**
-     * saves a new or updated bookmark to the backend.
+     * saves a new or updated bookmark to the backend. tags are split by whitespaces comma, colon or semicolon.
      */
     this.saveEntryData = function () {
         if (self.newBookmarkUrl) {
@@ -249,7 +249,7 @@ function TabooVM($http, $base64, $location, tabooService) {
             bookmark.title = self.newBookmarkTitle;
             bookmark.tags = self.newBookmarkTags
                 .toLowerCase()
-                .split(/[^a-zA-ZäöüÄÖÜß0-9]+/i)
+                .split(/[\s*,;:]/i)
                 .filter(function (t) {
                     return !(t === '');
                 });
