@@ -12,8 +12,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Abstract implementation of the BookmarkRepository interface that just implements some basic methods.
@@ -25,6 +27,23 @@ public abstract class AbstractBookmarkRepository implements BookmarkRepository {
 
 
 // --------------------- Interface BookmarkRepository ---------------------
+
+
+    /**
+     * get all bookmarks and remove the ids
+     * @return all bookmarks without ids
+     */
+    @Override
+    public Collection<Bookmark> dumpBookmarks() {
+        final List<Bookmark> clones = getAllBookmarks()
+                .stream()
+                .map(Bookmark::clone)
+                .collect(Collectors.toList());
+        for (Bookmark bookmark : clones) {
+            bookmark.setId(null);
+        }
+        return clones;
+    }
 
     /**
      * basic implementation for the combination logic which relies on #getBookmarksWithTag(String) being implemented.
