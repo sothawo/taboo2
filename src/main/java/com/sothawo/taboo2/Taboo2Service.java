@@ -56,8 +56,6 @@ import static com.sothawo.taboo2.BookmarkBuilder.aBookmark;
 public class Taboo2Service {
 // ------------------------------ FIELDS ------------------------------
 
-    /** dumping all bookmarks without ids. */
-    public static final String MAPPING_DUMP_BOOKMARKS = "/dump";
     /** Logger for the class. */
     private final static Logger LOG = LoggerFactory.getLogger(Taboo2Service.class);
 
@@ -75,6 +73,9 @@ public class Taboo2Service {
 
     /** Mapping for check call, package scope for test class. */
     static final String MAPPING_CHECK = "/check";
+
+    /** dumping all bookmarks without ids. */
+    public static final String MAPPING_DUMP_BOOKMARKS = "/dump";
 
     /** needed for tests. */
     static final String MAGIC_TEST_URL = "magicTestStringThatsNotAnUrl";
@@ -172,7 +173,7 @@ public class Taboo2Service {
      *
      * @return bookmarks
      */
-    @RequestMapping(value = MAPPING_DUMP_BOOKMARKS)
+    @RequestMapping(value = MAPPING_DUMP_BOOKMARKS, method = RequestMethod.GET)
     public final Collection<Bookmark> dumpBookmarks() {
         return repository.dumpBookmarks();
     }

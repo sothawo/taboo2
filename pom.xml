@@ -153,13 +153,14 @@
                 <scope>test</scope>
             </dependency>
             <!-- Jackson needed to read mozilla exported bookmarks; program is in test scope. -->
+            <!--
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
                 <version>2.6.3</version>
                 <scope>test</scope>
             </dependency>
-
+-->
         </dependencies>
     </dependencyManagement>
 
@@ -240,11 +241,12 @@
         </dependency>
 
         <!-- import program in test scope -->
+        <!--
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
-
+-->
     </dependencies>
 	
 	<build>

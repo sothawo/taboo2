@@ -7,7 +7,7 @@
         <!-- encoders are assigned the type
              ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
-            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} %-5level [%thread] %logger{60} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -19,7 +19,7 @@
     <logger name="org.apache" level="WARN"/>
     <logger name="com.sothawo" level="debug" />
 
-    <root level="warn">
+    <root level="warnxclde">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
