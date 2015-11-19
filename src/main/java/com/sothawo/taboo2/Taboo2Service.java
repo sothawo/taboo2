@@ -56,6 +56,8 @@ import static com.sothawo.taboo2.BookmarkBuilder.aBookmark;
 public class Taboo2Service {
 // ------------------------------ FIELDS ------------------------------
 
+    /** dumping all bookmarks without ids. */
+    public static final String MAPPING_DUMP_BOOKMARKS = "/dump";
     /** Logger for the class. */
     private final static Logger LOG = LoggerFactory.getLogger(Taboo2Service.class);
 
@@ -82,7 +84,8 @@ public class Taboo2Service {
     /** AND operation. */
     private static final String OP_AND = "and";
 
-    /** user agent that jsoup sends when fetching the page title. Some sites send 403, when no known user agent is
+    /**
+     * user agent that jsoup sends when fetching the page title. Some sites send 403, when no known user agent is
      * sent).
      */
     private static final String JSOUP_USER_AGENT =
@@ -162,6 +165,16 @@ public class Taboo2Service {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public final void deleteBookmarkById(@PathVariable(value = "id") final String id) {
         repository.deleteBookmark(id);
+    }
+
+    /**
+     * dumps all the bookmarks without having their id set.
+     *
+     * @return bookmarks
+     */
+    @RequestMapping(value = MAPPING_DUMP_BOOKMARKS)
+    public final Collection<Bookmark> dumpBookmarks() {
+        return repository.dumpBookmarks();
     }
 
     /**

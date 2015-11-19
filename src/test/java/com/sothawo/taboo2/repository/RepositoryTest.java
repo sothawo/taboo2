@@ -24,6 +24,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -160,6 +161,22 @@ public class RepositoryTest {
         Collection<Bookmark> allBookmarks = repository.getAllBookmarks();
         assertThat(allBookmarks, hasSize(2));
         assertThat(allBookmarks, hasItems(bookmark1, bookmark2));
+    }
+
+    @Test
+    public void dumpBookmarks() throws Exception {
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("title2").addTag("tag2").build();
+
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+
+        Collection<Bookmark> allBookmarks = repository.dumpBookmarks();
+        assertThat(allBookmarks, hasSize(2));
+        assertThat(allBookmarks, hasItems(bookmark1, bookmark2));
+        for (Bookmark bookmark : allBookmarks) {
+            assertThat(bookmark.getId(), is(nullValue()));
+        }
     }
 
     @Test

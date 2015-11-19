@@ -12,8 +12,8 @@ import com.sothawo.taboo2.NotFoundException;
 import java.util.Collection;
 
 /**
- * Implementations of this interface store and retrieve Bookmarks. Extends AutoCloseable so it might be used in
- * contexts using this feature.
+ * Implementations of this interface store and retrieve Bookmarks. Extends AutoCloseable so it might be used in contexts
+ * using this feature.
  *
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
@@ -42,6 +42,13 @@ public interface BookmarkRepository extends AutoCloseable {
      *         if no bookmark is found for the given id
      */
     void deleteBookmark(String id);
+
+    /**
+     * returns all bookmarks without their ids.
+     *
+     * @return the bookmarks
+     */
+    Collection<Bookmark> dumpBookmarks();
 
     /**
      * returns all bookmarks in the repository.

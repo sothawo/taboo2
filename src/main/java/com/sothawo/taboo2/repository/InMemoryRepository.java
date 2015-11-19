@@ -5,7 +5,6 @@
  */
 package com.sothawo.taboo2.repository;
 
-import com.google.common.collect.Sets;
 import com.sothawo.taboo2.AlreadyExistsException;
 import com.sothawo.taboo2.Bookmark;
 import com.sothawo.taboo2.NotFoundException;
@@ -13,6 +12,7 @@ import com.sothawo.taboo2.NotFoundException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -116,22 +116,6 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
     }
 
     /**
-     * get all the bookmarks that have a given tag.
-     *
-     * @param tag
-     *         the tag
-     * @return a Set of Bookmarks, may be empty not null
-     */
-    protected Set<Bookmark> getBookmarksWithTag(String tag) {
-        final Set<Bookmark> foundBookmarks = new HashSet<>();
-        bookmarks.values()
-                .stream()
-                .filter(bookmark -> bookmark.getTags().contains(tag))
-                .forEach(foundBookmarks::add);
-        return foundBookmarks;
-    }
-
-    /**
      * removes all bookmarks from the reository.
      */
     @Override
@@ -152,6 +136,24 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
         }
         deleteBookmark(id);
         bookmarks.put(bookmark.getUrl(), bookmark);
+    }
+
+// -------------------------- OTHER METHODS --------------------------
+
+    /**
+     * get all the bookmarks that have a given tag.
+     *
+     * @param tag
+     *         the tag
+     * @return a Set of Bookmarks, may be empty not null
+     */
+    protected Set<Bookmark> getBookmarksWithTag(String tag) {
+        final Set<Bookmark> foundBookmarks = new HashSet<>();
+        bookmarks.values()
+                .stream()
+                .filter(bookmark -> bookmark.getTags().contains(tag))
+                .forEach(foundBookmarks::add);
+        return foundBookmarks;
     }
 
 // -------------------------- INNER CLASSES --------------------------

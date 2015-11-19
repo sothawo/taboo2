@@ -69,6 +69,7 @@ public class Taboo2ServiceTests {
 
     // couple of convenience constants
     private final static String TABOO2_BOOKMARKS = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_BOOKMARKS;
+    private final static String TABOO2_DUMP_BOOKMARKS = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_DUMP_BOOKMARKS;
     private final static String TABOO2_TAGS = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_TAGS;
     private final static String TABOO2_TITLE = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_TITLE;
 
@@ -558,5 +559,43 @@ public class Taboo2ServiceTests {
             repository.createBookmark((Bookmark) any);
             times = 0;
         }};
+    }
+
+    @Test
+    public void dumpBookmarks() throws Exception {
+        List<Bookmark> bookmarks = createBookmarks("0", "1", "2");
+        // remove ids from bookmarks
+        for (Bookmark bookmark : bookmarks) {
+            bookmark.setId(null);
+        }
+
+        new Expectations() {{
+            repository.dumpBookmarks();
+            result = bookmarks;
+        }};
+
+        MockMvc mockMvc = standaloneSetup(taboo2Service).build();
+        mockMvc.perform(get(TABOO2_DUMP_BOOKMARKS).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(3)))
+                .andExpect(jsonPath("$[0].id", is(bookmarks.get(0).getId())))
+                .andExpect(jsonPath("$[0].url", is(bookmarks.get(0).getUrl())))
+                .andExpect(jsonPath("$[0].title", is(bookmarks.get(0).getTitle())))
+                .andExpect(jsonPath("$[0].tags[0]", is(bookmarks.get(0).getTags().iterator().next())))
+                .andExpect(jsonPath("$[1].id", is(bookmarks.get(1).getId())))
+                .andExpect(jsonPath("$[1].url", is(bookmarks.get(1).getUrl())))
+                .andExpect(jsonPath("$[1].title", is(bookmarks.get(1).getTitle())))
+                .andExpect(jsonPath("$[1].tags[0]", is(bookmarks.get(1).getTags().iterator().next())))
+                .andExpect(jsonPath("$[2].id", is(bookmarks.get(2).getId())))
+                .andExpect(jsonPath("$[2].url", is(bookmarks.get(2).getUrl())))
+                .andExpect(jsonPath("$[2].title", is(bookmarks.get(2).getTitle())))
+                .andExpect(jsonPath("$[2].tags[0]", is(bookmarks.get(2).getTags().iterator().next())))
+        ;
+
+        new Verifications() {{
+            repository.dumpBookmarks();
+            times = 1;
+        }};
+
     }
 }
