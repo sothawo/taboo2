@@ -19,7 +19,7 @@
     <logger name="org.apache" level="WARN"/>
     <logger name="com.sothawo" level="debug" />
 
-    <root level="warnxclde">
+    <root level="warn">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

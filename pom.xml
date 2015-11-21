@@ -152,15 +152,7 @@
                 <version>${jsonPath.version}</version>
                 <scope>test</scope>
             </dependency>
-            <!-- Jackson needed to read mozilla exported bookmarks; program is in test scope. -->
-            <!--
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>2.6.3</version>
-                <scope>test</scope>
-            </dependency>
--->
+
         </dependencies>
     </dependencyManagement>
 
@@ -221,32 +213,30 @@
             inhibit using Spring's JUnit runner-->
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <!-- needed for Spring's Testrunner and utilities -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
+            <scope>test</scope>
         </dependency>
 
-        <!-- import program in test scope -->
-        <!--
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-        </dependency>
--->
     </dependencies>
 	
 	<build>
