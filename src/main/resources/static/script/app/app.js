@@ -291,12 +291,17 @@ function TabooVM($http, $base64, $location, tabooService) {
     this.deleteBookmark = function (bookmark) {
         if (bookmark) {
             // todo: confirm
-            $http.delete(tabooService.urlService + tabooService.pathBookmarks + '/' + bookmark.id)
-                .then(function (result) {
-                    self.reloadBookmarks();
-                })
-                .catch(function (result) {
-                    alert('Error: ' + result.status + ' ' + result.statusText + ' (' + result.data + ')');
+            bootbox.confirm('Are you sure to delete ' + bookmark.url + '?',
+                function(confirmed) {
+                    if(confirmed) {
+                        $http.delete(tabooService.urlService + tabooService.pathBookmarks + '/' + bookmark.id)
+                            .then(function (result) {
+                                self.reloadBookmarks();
+                            })
+                            .catch(function (result) {
+                                alert('Error: ' + result.status + ' ' + result.statusText + ' (' + result.data + ')');
+                            });
+                    }
                 });
         }
     };
