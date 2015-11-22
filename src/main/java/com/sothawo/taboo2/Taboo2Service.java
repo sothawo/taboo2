@@ -151,6 +151,7 @@ public class Taboo2Service {
                 .path(String.valueOf(createdBookmark.getId()))
                 .build().toUri();
         headers.setLocation(locationUri);
+        LOG.info("created bookmark {}", createdBookmark);
         return new ResponseEntity<>(createdBookmark, headers, HttpStatus.CREATED);
     }
 
@@ -166,6 +167,7 @@ public class Taboo2Service {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public final void deleteBookmarkById(@PathVariable(value = "id") final String id) {
         repository.deleteBookmark(id);
+        LOG.info("deleted bookmark with id {}", id);
     }
 
     /**
@@ -297,7 +299,7 @@ public class Taboo2Service {
                 urlString = "http://" + urlString;
             }
             final String finalUrl = urlString;
-            LOG.debug("loading title for url {}", finalUrl);
+            LOG.info("loading title for url {}", finalUrl);
             try {
                 String htmlTitle = Jsoup
                         .connect(finalUrl)
@@ -305,7 +307,7 @@ public class Taboo2Service {
                         .userAgent(JSOUP_USER_AGENT)
                         .get()
                         .title();
-                LOG.debug("got title: {}", htmlTitle);
+                LOG.info("got title: {}", htmlTitle);
                 return new ResponseEntity<>(aBookmark().withUrl(finalUrl).withTitle(htmlTitle).build(), HttpStatus.OK);
             } catch (HttpStatusException e) {
                 LOG.info("loading url http error", e);
@@ -341,5 +343,6 @@ public class Taboo2Service {
             throw new IllegalArgumentException("id must be set");
         }
         repository.updateBookmark(bookmark);
+        LOG.info("updated bookmark {}", bookmark);
     }
 }

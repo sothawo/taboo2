@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.sothawo</groupId>
-	<artifactId>taboo2</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
+    <groupId>com.sothawo</groupId>
+    <artifactId>taboo2</artifactId>
+    <version>0.3.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-	<name>taboo2</name>
-	<description>taboo service 2</description>
+    <name>taboo2</name>
+    <description>taboo service 2</description>
 
     <developers>
         <developer>
@@ -27,9 +27,8 @@
         <slf4j.version>1.7.9</slf4j.version>
         <logback.version>1.1.2</logback.version>
 
-        <spring.version>4.2.1.RELEASE</spring.version>
-        <spring-boot.version>1.2.5.RELEASE</spring-boot.version>
-        <spring-data-mongo.version>1.7.1.RELEASE</spring-data-mongo.version>
+        <spring.version>4.2.3.RELEASE</spring.version>
+        <spring-boot.version>1.3.0.RELEASE</spring-boot.version>
 
         <guava.version>18.0</guava.version>
         <hamcrest.version>1.3</hamcrest.version>
@@ -45,201 +44,124 @@
 
     </properties>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.5.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.2.5.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
 
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- Logging -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
-            </dependency>
-            <!-- for loading titles from websites -->
-            <dependency>
-                <groupId>org.jsoup</groupId>
-                <artifactId>jsoup</artifactId>
-                <version>${jsoup.version}</version>
-            </dependency>
-
-            <!-- get liquibase to slf4j logging, compile, so that it's on the classpath when running from IDE-->
-            <dependency>
-                <groupId>com.mattbertolini</groupId>
-                <artifactId>liquibase-slf4j</artifactId>
-                <version>${liquibase.slf4j.version}</version>
-                <scope>compile</scope>
-            </dependency>
-
-            <!-- database -->
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-core</artifactId>
-                <version>${liquibase.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-core</artifactId>
-                <version>${hibernate.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-entitymanager</artifactId>
-                <version>${hibernate.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-c3p0</artifactId>
-                <version>${hibernate.version}</version>
-                <scope>compile</scope>
-            </dependency>
-
-            <dependency>
-                <!-- before JUnit, otherwise the test classes must be annotated with @RunWith(JMockit.class) which may
-                inhibit using Spring's JUnit runner-->
-                <groupId>org.jmockit</groupId>
-                <artifactId>jmockit</artifactId>
-                <version>${jmockit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <!-- needed for Spring's Testrunner and utilities -->
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${spring.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-library</artifactId>
-                <version>${hamcrest.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.jayway.jsonpath</groupId>
-                <artifactId>json-path</artifactId>
-                <version>${jsonPath.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+        <!--Spring -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
-
         <!-- for loading titles from websites -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
+        </dependency>
+
+        <!-- get liquibase to slf4j logging, compile, so that it's on the classpath when running from IDE-->
+        <dependency>
+            <groupId>com.mattbertolini</groupId>
+            <artifactId>liquibase-slf4j</artifactId>
+            <version>${liquibase.slf4j.version}</version>
         </dependency>
 
         <!-- database -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.mattbertolini</groupId>
-            <artifactId>liquibase-slf4j</artifactId>
+            <version>${h2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-c3p0</artifactId>
+            <version>${hibernate.version}</version>
         </dependency>
 
-        <!-- Test -->
         <dependency>
             <!-- before JUnit, otherwise the test classes must be annotated with @RunWith(JMockit.class) which may
             inhibit using Spring's JUnit runner-->
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
+            <version>${jmockit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <!-- needed for Spring's Testrunner and utilities -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
+            <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
+            <version>${jsonPath.version}</version>
             <scope>test</scope>
         </dependency>
 
     </dependencies>
-	
-	<build>
+
+    <build>
 
         <resources>
             <resource>
@@ -248,10 +170,10 @@
             </resource>
         </resources>
 
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
                 <executions>
                     <execution>
                         <goals>
@@ -262,7 +184,7 @@
                         </configuration>
                     </execution>
                 </executions>
-			</plugin>
-		</plugins>
+            </plugin>
+        </plugins>
     </build>
 </project>

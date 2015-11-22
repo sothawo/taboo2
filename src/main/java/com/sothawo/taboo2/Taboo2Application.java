@@ -22,10 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 @SpringBootApplication
 @EnableConfigurationProperties
@@ -49,7 +50,14 @@ public class Taboo2Application {
         SLF4JBridgeHandler.install();
     }
 
-
+    @Bean
+    public CommonsRequestLoggingFilter requestLoggingFilter() {
+        CommonsRequestLoggingFilter crlf = new CommonsRequestLoggingFilter();
+        crlf.setIncludeClientInfo(true);
+        crlf.setIncludeQueryString(true);
+        crlf.setIncludePayload(true);
+        return crlf;
+    }
 // -------------------------- OTHER METHODS --------------------------
 
     @PostConstruct
