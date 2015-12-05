@@ -33,6 +33,9 @@ public final class DBManager {
 
             Liquibase liquibase =
                     new Liquibase(changeLogResource, new ClassLoaderResourceAccessor(), dbConnection);
+            // as we are the only process using the database, we can do a release locks safely in case the last
+            // instance got stuck.
+            liquibase.forceReleaseLocks();
             liquibase.update(new Contexts());
         } catch (SQLException | LiquibaseException e) {
             throw new TabooException("update database", e);
