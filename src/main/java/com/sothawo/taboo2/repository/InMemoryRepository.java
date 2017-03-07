@@ -9,6 +9,7 @@ import com.sothawo.taboo2.AlreadyExistsException;
 import com.sothawo.taboo2.Bookmark;
 import com.sothawo.taboo2.NotFoundException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,7 +82,7 @@ public class InMemoryRepository extends AbstractBookmarkRepository {
 
     @Override
     public Collection<Bookmark> getAllBookmarks() {
-        return bookmarks.values();
+        return new ArrayList<>(bookmarks.values());
     }
 
     @Override

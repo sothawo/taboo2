@@ -33,7 +33,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,11 +64,13 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 @WebAppConfiguration
 @ActiveProfiles({"test", "repo-mocked"})
 public class Taboo2ServiceTests {
-// ------------------------------ FIELDS ------------------------------
 
     // couple of convenience constants
     private final static String TABOO2_BOOKMARKS = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_BOOKMARKS;
-    private final static String TABOO2_DUMP_BOOKMARKS = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_DUMP_BOOKMARKS;
+    private final static String TABOO2_DUMP_BOOKMARKS =
+            Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_DUMP_BOOKMARKS;
+    private final static String TABOO2_LOAD_BOOKMARKS =
+            Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_LOAD_BOOKMARKS;
     private final static String TABOO2_TAGS = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_TAGS;
     private final static String TABOO2_TITLE = Taboo2Service.MAPPING_TABOO2 + Taboo2Service.MAPPING_TITLE;
 
@@ -83,7 +84,6 @@ public class Taboo2ServiceTests {
     @Injectable
     private BookmarkRepository repository;
 
-// -------------------------- OTHER METHODS --------------------------
 
     private byte[] convertObjectToJsonBytes(Object o) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -596,6 +596,28 @@ public class Taboo2ServiceTests {
             repository.dumpBookmarks();
             times = 1;
         }};
+    }
 
+    @Test
+    public void loadBookmarks() throws Exception {
+        List<Bookmark> bookmarks = createBookmarks("0", "1", "2");
+        final Bookmark[] bookmarksArray = bookmarks.toArray(new Bookmark[bookmarks.size()]);
+
+        new Expectations() {{
+            repository.loadBookmarks(bookmarksArray);
+        }};
+
+        MockMvc mockMvc = standaloneSetup(taboo2Service).build();
+        mockMvc.perform(post(TABOO2_LOAD_BOOKMARKS)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(bookmarksArray)))
+                .andExpect(status().isOk())
+        ;
+
+        new Verifications() {{
+            repository.loadBookmarks(bookmarksArray);
+            times = 1;
+        }};
     }
 }

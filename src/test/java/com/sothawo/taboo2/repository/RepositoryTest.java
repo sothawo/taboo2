@@ -366,4 +366,46 @@ public class RepositoryTest {
 
         fail("IllegalArgumentException expected");
     }
+
+    @Test
+    public void purgeRepository() throws Exception {
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").addTag("common").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("title2").addTag("tag2").addTag("common").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("title3").addTag("tag3").build();
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+        repository.createBookmark(bookmark3);
+
+        Collection<Bookmark> bookmarks = repository.getAllBookmarks();
+        assertThat(bookmarks, hasSize(3));
+        assertThat(bookmarks, hasItems(bookmark1, bookmark2, bookmark3));
+
+        repository.purge();
+
+        bookmarks = repository.getAllBookmarks();
+        assertThat(bookmarks, hasSize(0));
+    }
+
+    @Test
+    public void loadBookmarks() throws Exception {
+        Bookmark bookmark1 = aBookmark().withUrl("url1").withTitle("title1").addTag("tag1").addTag("common").build();
+        Bookmark bookmark2 = aBookmark().withUrl("url2").withTitle("title2").addTag("tag2").addTag("common").build();
+        Bookmark bookmark3 = aBookmark().withUrl("url3").withTitle("title3").addTag("tag3").build();
+        repository.createBookmark(bookmark1);
+        repository.createBookmark(bookmark2);
+        repository.createBookmark(bookmark3);
+
+        Collection<Bookmark> bookmarks = repository.getAllBookmarks();
+        assertThat(bookmarks, hasSize(3));
+        assertThat(bookmarks, hasItems(bookmark1, bookmark2, bookmark3));
+
+        repository.purge();
+        // no need for tests here, there's a special test for that
+
+        repository.loadBookmarks(bookmarks.toArray(new Bookmark[bookmarks.size()]));
+
+        bookmarks = repository.getAllBookmarks();
+        assertThat(bookmarks, hasSize(3));
+        assertThat(bookmarks, hasItems(bookmark1, bookmark2, bookmark3));
+    }
 }

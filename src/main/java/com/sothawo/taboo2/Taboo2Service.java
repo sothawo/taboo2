@@ -56,30 +56,24 @@ import static com.sothawo.taboo2.BookmarkBuilder.aBookmark;
 public class Taboo2Service {
 // ------------------------------ FIELDS ------------------------------
 
-    /** Logger for the class. */
-    private final static Logger LOG = LoggerFactory.getLogger(Taboo2Service.class);
-
-    /** Mapping for the class, package scope for test class. */
-    static final String MAPPING_TABOO2 = "/taboo2";
-
-    /** Mapping for the tags call, package scope for test class. */
-    static final String MAPPING_TAGS = "/tags";
-
-    /** Mapping for the bookmarks call, package scope for test class. */
-    static final String MAPPING_BOOKMARKS = "/bookmarks";
-
-    /** Mapping for title call, package scope for test class. */
-    static final String MAPPING_TITLE = "/title";
-
-    /** Mapping for check call, package scope for test class. */
-    static final String MAPPING_CHECK = "/check";
-
     /** dumping all bookmarks without ids. */
     public static final String MAPPING_DUMP_BOOKMARKS = "/dump";
-
+    /** loading all bookmarks without ids. */
+    public static final String MAPPING_LOAD_BOOKMARKS = "/load";
+    /** Mapping for the class, package scope for test class. */
+    static final String MAPPING_TABOO2 = "/taboo2";
+    /** Mapping for the tags call, package scope for test class. */
+    static final String MAPPING_TAGS = "/tags";
+    /** Mapping for the bookmarks call, package scope for test class. */
+    static final String MAPPING_BOOKMARKS = "/bookmarks";
+    /** Mapping for title call, package scope for test class. */
+    static final String MAPPING_TITLE = "/title";
+    /** Mapping for check call, package scope for test class. */
+    static final String MAPPING_CHECK = "/check";
     /** needed for tests. */
     static final String MAGIC_TEST_URL = "magicTestStringThatsNotAnUrl";
-
+    /** Logger for the class. */
+    private final static Logger LOG = LoggerFactory.getLogger(Taboo2Service.class);
     /** OR operation. */
     private static final String OP_OR = "or";
     /** AND operation. */
@@ -332,7 +326,7 @@ public class Taboo2Service {
      * @param bookmark
      *         bookmark to be updated
      * @throws IllegalArgumentException
-     *         when bookmarkis null or doesnt have it's id set
+     *         when bookmark is null or doesnt have it's id set
      */
     @RequestMapping(value = MAPPING_BOOKMARKS, method = RequestMethod.PUT)
     public final void updateBookmark(@RequestBody final Bookmark bookmark) {
@@ -344,5 +338,21 @@ public class Taboo2Service {
         }
         repository.updateBookmark(bookmark);
         LOG.info("updated bookmark {}", bookmark);
+    }
+
+    /**
+     * bulk loads bookmarks.
+     *
+     * @param bookmarks the bookmarks to load
+     * @throws IllegalArgumentException
+     *         when bookmarks is null
+     */
+    @RequestMapping(value = MAPPING_LOAD_BOOKMARKS, method = RequestMethod.POST)
+    public final void setMappingLoadBookmarks(@RequestBody final Bookmark[] bookmarks) {
+        if (null == bookmarks) {
+            throw new IllegalArgumentException("bookmarks must not be empty");
+        }
+        repository.loadBookmarks(bookmarks);
+        LOG.info("loaded {} bookmarks", bookmarks.length);
     }
 }

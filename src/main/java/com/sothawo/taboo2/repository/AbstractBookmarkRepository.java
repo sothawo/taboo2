@@ -23,11 +23,6 @@ import java.util.stream.Collectors;
  * @author P.J. Meisch (pj.meisch@sothawo.com).
  */
 public abstract class AbstractBookmarkRepository implements BookmarkRepository {
-// ------------------------ INTERFACE METHODS ------------------------
-
-
-// --------------------- Interface BookmarkRepository ---------------------
-
 
     /**
      * get all bookmarks and remove the ids
@@ -96,7 +91,15 @@ public abstract class AbstractBookmarkRepository implements BookmarkRepository {
         }
     }
 
-// -------------------------- OTHER METHODS --------------------------
+    @Override
+    public void loadBookmarks(Bookmark... bookmarks) {
+        if (null != bookmarks) {
+            for (Bookmark bookmark : bookmarks) {
+                bookmark.setId(null);
+                createBookmark(bookmark);
+            }
+        }
+    }
 
     /**
      * get all bookmakrs that have a given tag. basic implementation returning an empty set. Used by

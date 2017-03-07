@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015 sothawo
+ * Copyright (c) 2015-2017 sothawo
  *
  * http://www.sothawo.com
  */
@@ -32,6 +32,14 @@ public interface BookmarkRepository extends AutoCloseable {
      *         if a bookmark with the given url already exists
      */
     Bookmark createBookmark(Bookmark bookmark);
+
+    /**
+     * loads ana array of bookmarks. The ids of the bookmarks must be ignored. Used to initialze from a prevous dump.
+     *
+     * @param bookmarks
+     *         the4 bookmarks to load.
+     */
+    void loadBookmarks(Bookmark... bookmarks);
 
     /**
      * deletes the bookmark with the given id.
