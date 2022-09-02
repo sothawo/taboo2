@@ -35,7 +35,7 @@
         <jmockit.version>1.16</jmockit.version>
         <jsonPath.version>2.0.0</jsonPath.version>
         <junit.version>4.13.1</junit.version>
-        <jsoup.version>1.14.2</jsoup.version>
+        <jsoup.version>1.15.3</jsoup.version>
 
         <hibernate.version>5.4.24.Final</hibernate.version>
         <h2.version>2.1.210</h2.version>
